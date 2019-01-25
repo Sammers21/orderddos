@@ -1,0 +1,11 @@
+
+DROP TABLE IF EXISTS Orders;
+CREATE TABLE Orders (
+	id INTEGER auto_increment PRIMARY KEY,
+	email VARCHAR(256) NOT NULL,
+	target_url VARCHAR(256) NOT NULL,
+	region ENUM('NORTH_AMERICA', 'EUROPE', 'ASIA') NOT NULL,
+	num_nodes INT NOT NULL,
+	duration REAL NOT NULL,
+	status ENUM('NEW', 'SCHEDULED', 'REJECTED', 'ONGOING', 'DONE') DEFAULT 'NEW'
+);

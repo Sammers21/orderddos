@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Site stub</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" href="favicon.ico">
+
+	<!-- <link rel="stylesheet" href="css/normalize.css"> -->
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+	<style>
+		body > h1 {
+			text-align: center;
+		}
+
+		.wrap-main {
+			max-width: 600px;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+	<h1>Drankow & sons™</h1>
+
+	<hr />
+
+	<div class="wrap-main">
+		Evaluate DDoS-vulnerability of your <s>competitors</s> servers.
+
+		<form action="/submit-order" method="POST">
+			<h2 style="text-align: center;">Order a DDoS</h2>
+
+			<table style="width: 100%;">
+				<tr>
+					<td><label for="email">E-mail:</label></td>
+					<td><input type="text" id="email" name="email" min="1" max="100" /></td>
+				</tr>
+
+				<tr><td colspan="2"><hr /></td></tr>
+
+				<tr>
+					<td><label for="target_url">URL:</label></td>
+					<td><input type="text" id="target_url" name="target_url" min="1" max="100" /></td>
+				</tr>
+				<tr>
+					<td><label for="num_nodes">Number of nodes:</label></td>
+					<td>
+						<strong>50</strong>
+						<input type="range" id="num_nodes" name="num_nodes" min="1" max="100" value="50" />
+					</td>
+				</tr>
+				<tr>
+					<td><label for="region">Region:</label></td>
+					<td>
+						<select id="region" name="region">
+							<option value="NORTH_AMERICA" selected>North America</option>
+							<option value="EUROPE">Europe</option>
+							<option value="ASIA">Asia</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="duration">Duration:</label></td>
+					<td><input type="text" id="duration" name="duration" value="50" /></td>
+				</tr>
+				<tr>
+					<td>Estimated cost:</td>
+					<td><strong>14.88</strong> ₽</td>
+				</tr>
+			</table>
+
+			<hr />
+
+			<div style="text-align: center;">
+				<button type="submit">Submit</button>
+			</div>
+		</form>
+	</div>
+
+	<!-- <script src="js/index.js"></script> -->
+</body>
+</html>

@@ -1,0 +1,108 @@
+
+body {
+    margin: 0;
+}
+
+nav {
+    box-sizing: border-box;
+    width: 100%;
+
+    padding: 5px 0;
+
+    background: #eee;
+}
+
+nav > :first-child {
+    margin-left: 2em;
+}
+
+@media (min-width: 1000px) {
+    nav {
+        padding-left: calc((100% - 800px) / 2 - 2em)
+    }
+}
+
+@media (min-width: 2200px) {
+    nav {
+        padding-left: calc((100% - 1600px) / 2 - 2em)
+    }
+}
+
+nav a:first-child {
+    color: blue;
+}
+
+h5 {
+    font-size: inherit;
+    font-weight: normal;
+    font-style: italic;
+
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+}
+
+h5 a {
+    font-style: normal;
+}
+
+.bigblock {
+    margin: 20px auto;
+    padding: 0 2em;
+    max-width: 800px;
+    text-align: left;
+    background: white;
+}
+
+.pic {
+    width: 300px;
+}
+
+.pic img {
+    width: 100%;
+}
+
+@media (min-width: 750px) {
+    .pic {
+        float: right;
+    }
+}
+
+@media (max-width: 750px) {
+    /*.pic {
+        display: inline-block;
+        margin: 1em auto;
+
+        clear: both;
+    }*/
+
+    .pic {
+        float: right;
+        width: 100px;
+    }
+
+    .pic img {
+        /*width: 100%;*/
+        /*width: 100%;*/
+        /*height: auto;*/
+    }
+}
+
+
+@media (max-width: 450px) {
+    .pic {
+        display: none;
+    }
+}
+
+.pic figcaption {
+    text-align: right;
+    font-style: italic;
+}
+
+.code-for-show {
+    overflow-x: scroll;
+}
+
+/*ol, ul {
+    padding-left: 5em;
+}*/
