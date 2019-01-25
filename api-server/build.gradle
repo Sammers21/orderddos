@@ -15,17 +15,19 @@ plugins {
 }
 
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
+    mavenLocal()
     jcenter()
 }
 
-dependencies {
-    // This dependency is found on compile classpath of this component and consumers.
-    implementation 'com.google.guava:guava:26.0-jre'
+ext {
+    logback_version = '1.0.9'
+}
 
-    // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
+dependencies {
+    compile 'io.github.artificial-vulnerability-tools:env:0.0.1'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: logback_version
+    testCompile 'junit:junit:4.12'
 }
 
 // Define the main class for the application

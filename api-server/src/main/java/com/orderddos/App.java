@@ -3,12 +3,35 @@
  */
 package com.orderddos;
 
-public class App {
+import com.orderddos.docean.CreateNewDroplet;
+import com.orderddos.docean.DigitalOceanDropletsApiClient;
+import com.orderddos.docean.DropletImage;
+import com.orderddos.docean.DropletSize;
+import io.github.avt.env.extend.Launcher;
+import io.github.avt.env.spreading.Topology;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+
+import static com.orderddos.docean.DropletRegion.AMS_3;
+
+public class App extends Launcher {
+
+    public static String OTABEK_API_KEY = "1d0866bdd5ac3a73d043769679eb71e4b788ab28129dd4d22193bd05cd0ccc40";
+
     public String getGreeting() {
         return "Hello world.";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        Vertx vertx = Vertx.vertx();
+        DigitalOceanDropletsApiClient apiClient = new DigitalOceanDropletsApiClient(vertx);
+        apiClient.createNewDroplet(new CreateNewDroplet("test1", AMS_3, DropletSize.S_1_VCPU_1GB, DropletImage.UBUNTU_16_04_X64));
+        CreateNewDroplet test1 = new CreateNewDroplet("test1", AMS_3, DropletSize.S_1_VCPU_1GB, DropletImage.UBUNTU_16_04_X64);
+        System.out.println((JsonObject.mapFrom(test1)));
+    }
+
+    @Override
+    public void launch(int envPort) {
+        main(new String[0]);
     }
 }
