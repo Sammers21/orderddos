@@ -1,0 +1,11 @@
+{
+ "web": {
+   "port": 80
+ },
+ "db": {
+   "host": "localhost",
+   "database": "postgres",
+   "user": "postgres",
+   "password": "GSJ73vFZ3L6cfZFCBzTtp7JZ5vnCsrpxeuj9squgsu53FkV7NacLmqUZ8PDxyVCY"
+ }
+}
