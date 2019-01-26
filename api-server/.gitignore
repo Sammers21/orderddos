@@ -5,3 +5,6 @@
 build
 *.iml
 .idea
+
+out/
+gradle/
