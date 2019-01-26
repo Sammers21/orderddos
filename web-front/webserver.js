@@ -14,6 +14,21 @@ app.get('/', (req, res) => {
     res.sendFile("src/index.html", { root: __dirname });
 });
 
+app.get('/order/:id', (req, res) => {
+    db.one(
+        `SELECT * FROM Orders WHERE uuid=$1`,
+        [req.params.id]
+    ).then(data => {
+        res.send(`<h2>Order ${req.params.id}</h2>
+            <p><pre>${JSON.stringify(data, null, 4)}</pre>
+            <p><a href="/">Go back</a>`);
+    }).catch(err => {
+        res.status(404).send(`<h2>Not found</h2>
+            <p><pre style="color: red;">${err}</pre>
+            <p><a href="/">Go back</a>`);
+    });
+});
+
 app.post('/submit-order', (req, res) => {
     const { email, target_url, num_nodes_na, num_nodes_eu, num_nodes_a, start_time, duration } = req.body;
 
@@ -33,11 +48,13 @@ app.post('/submit-order', (req, res) => {
         ]
     ).then(data => {
         console.log(`New order: \x1b[1m${data.uuid}\x1b[0m`);
+        res.redirect(`/order/${data.uuid}`);
     }).catch(err => {
-        console.log("Pok: ", err);
+        console.log("Ept:", err);
+        res.status(400).send(`<h2>Че за хуйня?</h2>
+            <p><pre style="color: red;">${JSON.stringify(err, null, 4)}</pre>
+            <p><a href="/">Go back</a>`);
     });
-
-    res.redirect('/');
 });
 
 // app.use(express.static(path.join(__dirname, 'dist')));
