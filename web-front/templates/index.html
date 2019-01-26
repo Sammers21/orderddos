@@ -6,7 +6,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="shortcut icon" href="favicon.ico">
+	<link rel="icon" type="image/png" href="/favicon.png" />
 
 	<!-- <link rel="stylesheet" href="css/normalize.css"> -->
 
@@ -32,54 +32,90 @@
 	<hr />
 
 	<div class="wrap-main">
-		Evaluate DDoS-vulnerability of your <s>competitors</s> servers.
+		<p>
+			Evaluate DDoS-vulnerability of your <s>competitors</s> servers.
+		</p>
 
 		<form action="/submit-order" method="POST">
-			<h2 style="text-align: center;">Order a DDoS</h2>
+			<h3 class="form-text text-center">Order a DDoS attack</h3>
 
-			<table style="width: 100%;">
-				<tr>
-					<td><label for="email">E-mail:</label></td>
-					<td><input type="text" id="email" name="email" min="1" max="100" /></td>
-				</tr>
+			<div class="form-group">
+				<div class="form-row">
+					<label class="col-2 col-form-label" for="email">E-mail</label>
+					<div class="col-10">
+						<input class="form-control" type="text" id="email" name="email" placeholder="titantins@gmail.com" />
+					</div>
+				</div>
+				<small class="form-text text-muted">
+					You'll be personally contacted by Pavel Drankov, our CEO.
+				</small>
+			</div>
 
-				<tr><td colspan="2"><hr /></td></tr>
+			<hr />
 
-				<tr>
-					<td><label for="target_url">URL:</label></td>
-					<td><input type="text" id="target_url" name="target_url" min="1" max="100" /></td>
-				</tr>
-				<tr>
-					<td><label for="num_nodes">Number of nodes:</label></td>
-					<td>
-						<strong>50</strong>
-						<input type="range" id="num_nodes" name="num_nodes" min="1" max="100" value="50" />
-					</td>
-				</tr>
-				<tr>
-					<td><label for="region">Region:</label></td>
-					<td>
-						<select id="region" name="region">
-							<option value="NORTH_AMERICA" selected>North America</option>
-							<option value="EUROPE">Europe</option>
-							<option value="ASIA">Asia</option>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td><label for="duration">Duration:</label></td>
-					<td><input type="text" id="duration" name="duration" value="50" /></td>
-				</tr>
-				<tr>
-					<td>Estimated cost:</td>
-					<td><strong>14.88</strong> ₽</td>
-				</tr>
-			</table>
+			<div class="form-group form-row">
+				<label class="col-2 col-form-label" for="target_url">URL</label>
+				<div class="col-10">
+					<input class="form-control" type="text" id="target_url" name="target_url" placeholder="https://github.com/Sammers21/" />
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label>Node count</label>
+				<div class="row">
+					<div class="col">
+						<div class="input-group input-group-sm">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="num_nodes_na">North America</label>
+							</div>
+							<input class="form-control form-control-sm" type="text" id="num_nodes_na" name="num_nodes_na" placeholder="1488" value="10" />
+						</div>
+					</div>
+					<div class="col">
+						<div class="input-group input-group-sm">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="num_nodes_eu">Europe</label>
+							</div>
+							<input class="form-control form-control-sm" type="text" id="num_nodes_eu" name="num_nodes_eu" placeholder="1488" />
+						</div>
+					</div>
+					<div class="col">
+						<div class="input-group input-group-sm">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="num_nodes_a">Asia</label>
+							</div>
+							<input class="form-control form-control-sm" type="text" id="num_nodes_a" name="num_nodes_a" placeholder="1488" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group form-row">
+				<label class="col-2 col-form-label" for="duration">Duration</label>
+				<div class="col-10">
+					<div class="input-group">
+						<input class="form-control" type="text" id="duration" name="duration" placeholder="47" value="47" />
+						<div class="input-group-append">
+							<div class="input-group-text">minutes</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group form-row">
+				<label class="col-2 col-form-label" for="target_url">Subtotal</label>
+				<div class="col-10 col-form-label">
+					<span class="text-muted">
+						<strong>2</strong> &times; <strong>2</strong> =
+					</span>
+					<strong>14.88</strong> ₽
+				</div>
+			</div>
 
 			<hr />
 
 			<div style="text-align: center;">
-				<button type="submit">Submit</button>
+				<button type="submit" class="btn btn-primary">Submit</button>
 			</div>
 		</form>
 	</div>
