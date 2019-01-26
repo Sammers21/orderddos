@@ -7,11 +7,11 @@ DROP TABLE IF EXISTS Orders;
 CREATE TABLE Orders
 (
   uuid                       UUID PRIMARY KEY                  DEFAULT uuid_generate_v1(),
-  ddos_form_submit_timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT (now() AT TIME ZONE 'utc'),
-  ddos_attack_start_time     TIMESTAMP WITH TIME ZONE          DEFAULT NULL,
+  t_submitted                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT (now() AT TIME ZONE 'utc'),
   email                      VARCHAR(256)             NOT NULL,
   target_url                 VARCHAR(256)             NOT NULL,
-  regions_and_nodes          JSON                     NOT NULL,
+  num_nodes_by_region        JSON                     NOT NULL,
+  t_start                    TIMESTAMP WITH TIME ZONE          DEFAULT NULL,
   duration                   INTERVAL                 NOT NULL,
   status                     OrderStatus              NOT NULL DEFAULT 'NEW'
 );
