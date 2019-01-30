@@ -28,6 +28,38 @@ public class Order {
         this.status = status;
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public OffsetDateTime getT_submitted() {
+        return t_submitted;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getTarget_url() {
+        return target_url;
+    }
+
+    public JsonObject getNum_nodes_by_region() {
+        return num_nodes_by_region;
+    }
+
+    public OffsetDateTime getT_start() {
+        return t_start;
+    }
+
+    public Interval getDuration() {
+        return duration;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
     @Override
     public String toString() {
         return "Order{" +

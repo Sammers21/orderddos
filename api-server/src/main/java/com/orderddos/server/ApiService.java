@@ -1,6 +1,6 @@
 package com.orderddos.server;
 
-import com.orderddos.domain.DDoSRequest;
+import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 import io.reactiverse.pgclient.*;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
-import static com.orderddos.domain.DDoSDeploymentService.DDOS_DEPLOYMENT_ADDRESS;
-
 public class ApiService extends AbstractVerticle {
 
     private static final Logger log = LoggerFactory.getLogger(ApiService.class);
@@ -23,10 +21,13 @@ public class ApiService extends AbstractVerticle {
 
     public static final String START_DDOS = "/start-ddos";
     public static final String DDOS_UUID = "uuid";
+    private PgPool pgClient;
+    private DigitalOceanClient digitalOceanClient;
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         var httpServer = vertx.createHttpServer();
+        this.digitalOceanClient = new DigitalOceanClient(DDoSApiService.OTABEK_API_KEY);
         var router = Router.router(vertx);
 
         // Pool options
@@ -39,7 +40,7 @@ public class ApiService extends AbstractVerticle {
                 .setMaxSize(5);
 
         // Create the client pool
-        PgPool pgClient = PgClient.pool(vertx, options);
+        this.pgClient = PgClient.pool(vertx, options);
 
         router.post(START_DDOS).handler(ctx -> {
             MultiMap params = ctx.request().params();
@@ -60,14 +61,19 @@ public class ApiService extends AbstractVerticle {
                                     onlyRow.getInterval("duration"),
                                     onlyRow.getString("status")
                             );
-                            ctx.response().end(order.toString());
+                            new DDoSDeployment(digitalOceanClient, vertx, order).deploy().setHandler(deployed -> {
+                                if (deployed.succeeded()) {
+                                    ctx.response().end("DEPLOYED");
+                                } else {
+                                    ctx.response().end("ERROR" + deployed.cause().getMessage());
+                                }
+                            });
                         } else {
                             ctx.response().end(result.cause().toString());
                             log.error("Error during query occured", result.cause());
                         }
                     });
         });
-
         httpServer.requestHandler(router);
         Future<HttpServer> httpServerDeployed = Future.future();
         httpServer.listen(API_SERVICE_VERTICLE_PORT, httpServerDeployed);
