@@ -62,6 +62,35 @@ public class DDoSDeployment {
                 event.fail(e);
             }
         }, fd);
+        int seconds = order.getDuration().getSeconds() + order.getDuration().getMinutes() * 60;
+        long periodicGet = vertx.setPeriodic(5_000, event -> {
+            vertx.<Droplets>executeBlocking(toComplete -> {
+                try {
+                    Droplets availableDropletsByTagName = digitalOceanClient.getAvailableDropletsByTagName(order.getUuid().toString(), 1, 100);
+                    toComplete.complete(availableDropletsByTagName);
+                } catch (Exception e) {
+                    log.error("Failed to get info about " + order, e);
+                    toComplete.fail(e);
+                }
+            }, aviliableDroplets -> {
+                if (aviliableDroplets.succeeded()) {
+                    Droplets result = aviliableDroplets.result();
+                    System.out.println(result);
+                }
+            });
+        });
+        vertx.setTimer(seconds * 1000, timeToUndeloy -> {
+            vertx.cancelTimer(periodicGet);
+            Future<Delete> delete = Future.future();
+            vertx.executeBlocking(event -> {
+                try {
+                    event.complete(digitalOceanClient.deleteDropletByTagName(order.getUuid().toString()));
+                } catch (Exception e) {
+                    log.error("Failed to delete" + order, e);
+                    event.fail(e);
+                }
+            }, delete);
+        });
         return fd.mapEmpty();
     }
 }
