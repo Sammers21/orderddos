@@ -3,6 +3,7 @@
  */
 package com.orderddos;
 
+import com.orderddos.domain.App;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

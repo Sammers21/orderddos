@@ -1,15 +1,14 @@
-package com.orderddos;
+package com.orderddos.domain;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 
 import java.util.UUID;
 
-import static com.orderddos.DDoSDeploymentService.DDOS_DEPLOYMENT_ADDRESS;
+import static com.orderddos.domain.DDoSDeploymentService.DDOS_DEPLOYMENT_ADDRESS;
 
 public class ApiServiceVerticle extends AbstractVerticle {
 

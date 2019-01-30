@@ -1,10 +1,9 @@
 package com.orderddos.docean;
 
-import com.orderddos.App;
+import com.orderddos.domain.App;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpRequest;
 import io.vertx.ext.web.client.WebClient;

@@ -1,4 +1,4 @@
-package com.orderddos;
+package com.orderddos.domain;
 
 import java.util.UUID;
 
