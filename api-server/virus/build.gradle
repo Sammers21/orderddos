@@ -1,4 +1,18 @@
 dependencies {
     compile 'io.github.artificial-vulnerability-tools:env:0.0.1'
+    compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: '4.0.0'
+    compile group: 'io.dropwizard.metrics', name: 'metrics-graphite', version: '4.0.0'
+    compile group: 'com.codahale.metrics', name: 'metrics-graphite', version: '3.0.2'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: logback_version
+}
+
+task packageVirusSources(type: Jar) {
+    archiveBaseName = project.name + '-test-fat'
+    from configurations.testCompile.collect { it.isDirectory() ? it : zipTree(it) }
+    from sourceSets.test.output
+    from sourceSets.main.output
+    from 'src/main/resources/run_virus.sh'
+
+    // in order to omit version in resulted file name
+    version = null
 }
