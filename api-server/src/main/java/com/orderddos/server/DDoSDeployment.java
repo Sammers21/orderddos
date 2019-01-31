@@ -1,7 +1,5 @@
 package com.orderddos.server;
 
-import com.myjeeva.digitalocean.exception.DigitalOceanException;
-import com.myjeeva.digitalocean.exception.RequestUnsuccessfulException;
 import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 import com.myjeeva.digitalocean.pojo.*;
 import com.orderddos.docean.DropletImage;
@@ -47,8 +45,9 @@ public class DDoSDeployment {
         droplets.setNames(dropletNames);
         droplets.setSize(DropletSize.S_1_VCPU_1GB);
         droplets.setRegion(new Region(AMS_3));
-        droplets.setImage(new Image(DropletImage.UBUNTU_16_04_X64));
+        droplets.setImage(new Image(DropletImage.UBUNTU_18_04_X64));
         droplets.setTags(List.of(order.getUuid().toString()));
+        droplets.setUserData(DDoSApiService.SETUP_ENV_SCRIPT);
         List<Key> keys = new ArrayList<Key>();
         keys.add(new Key("36:59:36:cf:aa:7f:0a:1a:e9:8f:18:b9:0b:5b:59:d2"));
         droplets.setKeys(keys);

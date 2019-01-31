@@ -1,0 +1,14 @@
+#cloud-config
+apt_update: true
+packages:
+  - zip
+  - unzip
+  - wget
+runcmd:
+  - wget https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz -O /root/openjdk-11.0.1_linux-x64_bin.tar.gz
+  - tar xzv -C /opt -f /root/openjdk-11.0.1_linux-x64_bin.tar.gz
+  - update-alternatives --install /usr/bin/java java /opt/jdk-11.0.1/bin/java 1
+  - wget https://github.com/artificial-vulnerability-tools/env/releases/download/0.0.1-RELEASE/env-dist-0.0.1.jar -O /root/env-dist-0.0.1.jar
+  - mkdir -p /root/env-dist
+  - cd /root/env-dist
+  - java -jar /root/env-dist-0.0.1.jar &
