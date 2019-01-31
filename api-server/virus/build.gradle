@@ -1,0 +1,4 @@
+dependencies {
+    compile 'io.github.artificial-vulnerability-tools:env:0.0.1'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: logback_version
+}

@@ -1,7 +1,6 @@
 package com.orderddos.server;
 
 import io.reactiverse.pgclient.data.Interval;
-import io.reactiverse.pgclient.data.Json;
 import io.vertx.core.json.JsonObject;
 
 import java.time.OffsetDateTime;
