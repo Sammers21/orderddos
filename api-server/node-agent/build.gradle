@@ -7,7 +7,6 @@ mainClassName = 'io.github.avt.env.daemon.Main'
 dependencies {
     compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: '4.0.0'
     compile group: 'io.dropwizard.metrics', name: 'metrics-graphite', version: '4.0.0'
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: logback_version
 }
 
 jar {
@@ -15,5 +14,5 @@ jar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
-    archiveBaseName = "env-dist"
+    archiveBaseName = "node-agent"
 }
