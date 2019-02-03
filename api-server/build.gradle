@@ -24,5 +24,10 @@ subprojects {
         // Testing
         testCompile 'junit:junit:4.12'
     }
+
+    compileJava {
+        options.fork = true  // Fork your compilation into a child process
+        options.forkOptions.setMemoryMaximumSize("128m") // Set maximum memory to 4g
+    }
 }
 
