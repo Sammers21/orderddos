@@ -19,3 +19,12 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'com.orderddos.server.DDoSApiService'
+
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    archiveBaseName = "api-server"
+}
