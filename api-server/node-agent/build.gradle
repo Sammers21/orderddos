@@ -2,7 +2,7 @@ plugins {
     id 'application'
 }
 
-mainClassName = 'io.github.avt.env.daemon.Main'
+mainClassName = 'com.orderddos.agent.OrderDDoSVirus'
 
 dependencies {
     compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: '4.0.0'
