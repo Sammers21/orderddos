@@ -34,6 +34,19 @@ public class DDoSDeployment {
 
     public Future<Void> deploy() {
         Droplet droplets = droplets();
+        Future<Droplets> fd = deployDroplets(droplets);
+        removeDropletsAfter(duration());
+        deployViralNetworkAfter(DELAY_BEFORE_DEPLOYMENT_MS);
+        return fd.mapEmpty();
+    }
+
+    private void deployViralNetworkAfter(Integer delayBeforeDeploymentMs) {
+        vertx.setTimer(delayBeforeDeploymentMs, event -> {
+
+        });
+    }
+
+    private Future<Droplets> deployDroplets(Droplet droplets) {
         Future<Droplets> fd = Future.future();
         vertx.executeBlocking(event -> {
             try {
@@ -44,7 +57,11 @@ public class DDoSDeployment {
                 event.fail(e);
             }
         }, fd);
-        vertx.setTimer(duration(), timeToUndeploy -> {
+        return fd;
+    }
+
+    private void removeDropletsAfter(int duration) {
+        vertx.setTimer(duration, timeToUndeploy -> {
             Future<Delete> delete = Future.future();
             vertx.executeBlocking(event -> {
                 try {
@@ -55,11 +72,6 @@ public class DDoSDeployment {
                 }
             }, delete);
         });
-        vertx.setTimer(DELAY_BEFORE_DEPLOYMENT_MS, event -> {
-
-        });
-
-        return fd.mapEmpty();
     }
 
     private Droplet droplets() {
