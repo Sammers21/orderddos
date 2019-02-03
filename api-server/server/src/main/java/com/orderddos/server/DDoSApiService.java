@@ -16,7 +16,6 @@ public class DDoSApiService {
     static {
         VERTX = Vertx.vertx();
         SETUP_ENV_SCRIPT = VERTX.fileSystem().readFileBlocking("env-dist-setup.yml").toString();
-        System.out.println(SETUP_ENV_SCRIPT);
     }
 
     public static void main(String[] args) throws URISyntaxException {

