@@ -7,7 +7,6 @@ import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import io.github.avt.env.extend.Launcher;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
@@ -37,7 +36,6 @@ public class OrderDDoSVirus extends Launcher {
     public void launch(int envPort) {
 
         Vertx vertx = Vertx.vertx();
-        HttpClient httpClient = vertx.createHttpClient();
         JsonObject json = vertx.fileSystem().readFileBlocking("attack.json").toJsonObject();
         UUID uuid = UUID.fromString(json.getString("uuid"));
         String uri = json.getString("uri");

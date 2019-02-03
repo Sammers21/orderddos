@@ -61,24 +61,29 @@ public class DDoSDeployment {
                 event.fail(e);
             }
         }, fd);
-        int seconds = order.getDuration().getSeconds() + order.getDuration().getMinutes() * 60;
+
+        int ddosAttackDurationSeconds = order.getDuration().getSeconds() +
+                order.getDuration().getMinutes() * 60 +
+                order.getDuration().getHours() * 60 * 60 +
+                order.getDuration().getDays() * 60 * 60 * 24;
+
         long periodicGet = vertx.setPeriodic(5_000, event -> {
             vertx.<Droplets>executeBlocking(toComplete -> {
                 try {
-                    Droplets availableDropletsByTagName = digitalOceanClient.getAvailableDropletsByTagName(order.getUuid().toString(), 1, 100);
+                    Droplets availableDropletsByTagName = digitalOceanClient.getAvailableDropletsByTagName(order.getUuid().toString(), 1, 100_000);
                     toComplete.complete(availableDropletsByTagName);
                 } catch (Exception e) {
                     log.error("Failed to get info about " + order, e);
                     toComplete.fail(e);
                 }
-            }, aviliableDroplets -> {
-                if (aviliableDroplets.succeeded()) {
-                    Droplets result = aviliableDroplets.result();
+            }, availableDroplets -> {
+                if (availableDroplets.succeeded()) {
+                    Droplets result = availableDroplets.result();
                     System.out.println(result);
                 }
             });
         });
-        vertx.setTimer(seconds * 1000, timeToUndeloy -> {
+        vertx.setTimer(ddosAttackDurationSeconds * 1000, timeToUndeploy -> {
             vertx.cancelTimer(periodicGet);
             Future<Delete> delete = Future.future();
             vertx.executeBlocking(event -> {
@@ -89,6 +94,9 @@ public class DDoSDeployment {
                     event.fail(e);
                 }
             }, delete);
+        });
+        vertx.setTimer((60 * 2 + 30) * 1000, event -> {
+
         });
         return fd.mapEmpty();
     }
