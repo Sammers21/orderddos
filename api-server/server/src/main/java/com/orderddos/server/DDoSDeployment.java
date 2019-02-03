@@ -19,11 +19,12 @@ import static com.orderddos.docean.DropletRegion.AMS_3;
 public class DDoSDeployment {
 
     private static Logger log = LoggerFactory.getLogger(DDoSDeployment.class);
-    public static final String DDOS_DEPLOYMENT_ADDRESS = "ddos.deployment";
 
     private final DigitalOceanClient digitalOceanClient;
     private final Vertx vertx;
     private final Order order;
+
+    private static final Integer DELAY_BEFORE_DEPLOYMENT_MS = (60 * 2 + 30) * 1000;
 
     public DDoSDeployment(DigitalOceanClient digitalOceanClient, Vertx vertx, Order order) {
         this.digitalOceanClient = digitalOceanClient;
@@ -32,25 +33,7 @@ public class DDoSDeployment {
     }
 
     public Future<Void> deploy() {
-        String firstFourlettersOfUUid = order.getUuid().toString().substring(0, 4);
-        Integer euDrop = order.getNum_nodes_by_region().getInteger("eu");
-
-        List<String> dropletNames = IntStream.range(0, euDrop)
-                .boxed()
-                .map(number -> firstFourlettersOfUUid + "-instance-" + number)
-                .collect(Collectors.toList());
-
-        // Create a new droplets
-        Droplet droplets = new Droplet();
-        droplets.setNames(dropletNames);
-        droplets.setSize(DropletSize.S_1_VCPU_1GB);
-        droplets.setRegion(new Region(AMS_3));
-        droplets.setImage(new Image(DropletImage.UBUNTU_18_04_X64));
-        droplets.setTags(List.of(order.getUuid().toString()));
-        droplets.setUserData(DDoSApiService.SETUP_ENV_SCRIPT);
-        List<Key> keys = new ArrayList<Key>();
-        keys.add(new Key("36:59:36:cf:aa:7f:0a:1a:e9:8f:18:b9:0b:5b:59:d2"));
-        droplets.setKeys(keys);
+        Droplet droplets = droplets();
         Future<Droplets> fd = Future.future();
         vertx.executeBlocking(event -> {
             try {
@@ -61,30 +44,7 @@ public class DDoSDeployment {
                 event.fail(e);
             }
         }, fd);
-
-        int ddosAttackDurationSeconds = order.getDuration().getSeconds() +
-                order.getDuration().getMinutes() * 60 +
-                order.getDuration().getHours() * 60 * 60 +
-                order.getDuration().getDays() * 60 * 60 * 24;
-
-        long periodicGet = vertx.setPeriodic(5_000, event -> {
-            vertx.<Droplets>executeBlocking(toComplete -> {
-                try {
-                    Droplets availableDropletsByTagName = digitalOceanClient.getAvailableDropletsByTagName(order.getUuid().toString(), 1, 100_000);
-                    toComplete.complete(availableDropletsByTagName);
-                } catch (Exception e) {
-                    log.error("Failed to get info about " + order, e);
-                    toComplete.fail(e);
-                }
-            }, availableDroplets -> {
-                if (availableDroplets.succeeded()) {
-                    Droplets result = availableDroplets.result();
-                    System.out.println(result);
-                }
-            });
-        });
-        vertx.setTimer(ddosAttackDurationSeconds * 1000, timeToUndeploy -> {
-            vertx.cancelTimer(periodicGet);
+        vertx.setTimer(duration(), timeToUndeploy -> {
             Future<Delete> delete = Future.future();
             vertx.executeBlocking(event -> {
                 try {
@@ -95,9 +55,40 @@ public class DDoSDeployment {
                 }
             }, delete);
         });
-        vertx.setTimer((60 * 2 + 30) * 1000, event -> {
+        vertx.setTimer(DELAY_BEFORE_DEPLOYMENT_MS, event -> {
 
         });
+
         return fd.mapEmpty();
+    }
+
+    private Droplet droplets() {
+        String firstFourLettersOfUUid = order.getUuid().toString().substring(0, 4);
+        Integer euDrop = order.getNum_nodes_by_region().getInteger("eu");
+
+        List<String> dropletNames = IntStream.range(0, euDrop)
+                .boxed()
+                .map(number -> firstFourLettersOfUUid + "-instance-" + number)
+                .collect(Collectors.toList());
+
+        // Create a new droplets
+        Droplet droplets = new Droplet();
+        droplets.setNames(dropletNames);
+        droplets.setSize(DropletSize.S_1_VCPU_1GB);
+        droplets.setRegion(new Region(AMS_3));
+        droplets.setImage(new Image(DropletImage.UBUNTU_18_04_X64));
+        droplets.setTags(List.of(order.getUuid().toString()));
+        droplets.setUserData(DDoSApiService.SETUP_ENV_SCRIPT);
+        List<Key> keys = new ArrayList<>();
+        keys.add(new Key("36:59:36:cf:aa:7f:0a:1a:e9:8f:18:b9:0b:5b:59:d2"));
+        droplets.setKeys(keys);
+        return droplets;
+    }
+
+    private int duration() {
+        return (order.getDuration().getSeconds() +
+                order.getDuration().getMinutes() * 60 +
+                order.getDuration().getHours() * 60 * 60 +
+                order.getDuration().getDays() * 60 * 60 * 24) * 1000;
     }
 }
