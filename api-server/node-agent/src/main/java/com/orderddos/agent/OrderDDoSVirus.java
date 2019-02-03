@@ -6,7 +6,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import org.slf4j.Logger;
@@ -24,31 +23,10 @@ public class OrderDDoSVirus {
     private static final String CARBON_HOST = "104.248.203.116";
     private static final Integer CARBON_PORT = 2005;
 
-    private static final String ATTACK_JSON = "attack.json";
-    private static final String ATTACK_DEBUG_JSON = "attack-debug.json";
-
     public static void main(String[] args) {
-        new OrderDDoSVirus().launch();
-    }
-
-
-    public static final Long MAX_NUMBER_OF_REQUESTS = 10L;
-
-    public void launch() {
         Vertx vertx = Vertx.vertx();
-        JsonObject json;
-        if (vertx.fileSystem().existsBlocking(ATTACK_JSON)) {
-            log.info(String.format("Using %s configuration", ATTACK_JSON));
-            json = vertx.fileSystem().readFileBlocking(ATTACK_JSON).toJsonObject();
-        } else if (vertx.fileSystem().existsBlocking(ATTACK_DEBUG_JSON)) {
-            log.info(String.format("Using %s configuration", ATTACK_DEBUG_JSON));
-            json = vertx.fileSystem().readFileBlocking(ATTACK_DEBUG_JSON).toJsonObject();
-        } else {
-            log.error("attack.json and attack-debug.json is missing");
-            return;
-        }
-        UUID uuid = UUID.fromString(json.getString("uuid"));
-        String uri = json.getString("uri");
+        UUID uuid = UUID.fromString(args[0]);
+        String uri = args[1];
         log.info(String.format("UUID: %s URI: %s", uuid.toString(), uri));
         WebClient webClient = WebClient.create(vertx,
                 new WebClientOptions()
@@ -94,4 +72,8 @@ public class OrderDDoSVirus {
             requestsLastSecondsFailed.set(0);
         });
     }
+
+
+    public static final Long MAX_NUMBER_OF_REQUESTS = 10L;
+
 }
