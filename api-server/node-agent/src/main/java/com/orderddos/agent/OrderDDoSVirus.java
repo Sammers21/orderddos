@@ -1,11 +1,10 @@
-package com.orderddos.virus;
+package com.orderddos.agent;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
-import io.github.avt.env.extend.Launcher;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
@@ -18,7 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class OrderDDoSVirus extends Launcher {
+public class OrderDDoSVirus {
 
     private static final Logger log = LoggerFactory.getLogger(OrderDDoSVirus.class);
 
@@ -29,15 +28,13 @@ public class OrderDDoSVirus extends Launcher {
     private static final String ATTACK_DEBUG_JSON = "attack-debug.json";
 
     public static void main(String[] args) {
-        new OrderDDoSVirus().launch(1);
+        new OrderDDoSVirus().launch();
     }
 
 
     public static final Long MAX_NUMBER_OF_REQUESTS = 10L;
 
-    @Override
-    public void launch(int envPort) {
-
+    public void launch() {
         Vertx vertx = Vertx.vertx();
         JsonObject json;
         if (vertx.fileSystem().existsBlocking(ATTACK_JSON)) {
@@ -52,9 +49,7 @@ public class OrderDDoSVirus extends Launcher {
         }
         UUID uuid = UUID.fromString(json.getString("uuid"));
         String uri = json.getString("uri");
-
         log.info(String.format("UUID: %s URI: %s", uuid.toString(), uri));
-
         WebClient webClient = WebClient.create(vertx,
                 new WebClientOptions()
                         .setKeepAlive(true)

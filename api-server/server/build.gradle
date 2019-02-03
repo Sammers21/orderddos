@@ -15,7 +15,6 @@ plugins {
 dependencies {
     compile 'io.reactiverse:reactive-pg-client:0.11.2'
     compile 'com.myjeeva.digitalocean:digitalocean-api-client:2.16'
-    compile 'io.github.artificial-vulnerability-tools:env:0.0.1'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: logback_version
     testCompile 'junit:junit:4.12'
 }

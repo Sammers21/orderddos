@@ -6,7 +6,7 @@
   </appender>
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <file>env-log.txt</file>
-    <append>api-sever-log.txt</append>
+    <append>true</append>
     <!-- set immediateFlush to false for much higher logging throughput -->
     <immediateFlush>false</immediateFlush>
     <encoder>

@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'api-server'
-include 'server', 'virus'
+include 'server', 'node-agent'

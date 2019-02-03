@@ -4,6 +4,8 @@ import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 import com.myjeeva.digitalocean.pojo.*;
 import com.orderddos.docean.DropletImage;
 import com.orderddos.docean.DropletSize;
+import io.github.avt.env.spreading.InfectionClient;
+import io.github.avt.env.spreading.impl.InfectionClientImpl;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
@@ -26,11 +28,13 @@ public class DDoSDeployment {
     private final Order order;
 
     private static final Integer DELAY_BEFORE_DEPLOYMENT_MS = (60 * 2 + 30) * 1000;
+    private final InfectionClient infectionClient;
 
     public DDoSDeployment(DigitalOceanClient digitalOceanClient, Vertx vertx, Order order) {
         this.digitalOceanClient = digitalOceanClient;
         this.vertx = vertx;
         this.order = order;
+        this.infectionClient = new InfectionClientImpl(vertx);
     }
 
     public Future<Void> deploy() {
@@ -50,7 +54,7 @@ public class DDoSDeployment {
                         .map(droplet -> droplet.getNetworks().getVersion4Networks().get(0).getIpAddress())
                         .collect(Collectors.toSet());
                 final String firtsIp = droplestIps.iterator().next();
-
+//                infectionClient.infect(new HostWithEnvironment(firtsIp, 2222), new File(""));
             } catch (Exception e) {
                 log.error("Unable to get info about droplets: ", e);
             }
