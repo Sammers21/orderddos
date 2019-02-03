@@ -25,6 +25,9 @@ public class OrderDDoSVirus extends Launcher {
     private static final String CARBON_HOST = "104.248.203.116";
     private static final Integer CARBON_PORT = 2005;
 
+    private static final String ATTACK_JSON = "attack.json";
+    private static final String ATTACK_DEBUG_JSON = "attack-debug.json";
+
     public static void main(String[] args) {
         new OrderDDoSVirus().launch(1);
     }
@@ -36,7 +39,17 @@ public class OrderDDoSVirus extends Launcher {
     public void launch(int envPort) {
 
         Vertx vertx = Vertx.vertx();
-        JsonObject json = vertx.fileSystem().readFileBlocking("attack.json").toJsonObject();
+        JsonObject json;
+        if (vertx.fileSystem().existsBlocking(ATTACK_JSON)) {
+            log.info(String.format("Using %s configuration", ATTACK_JSON));
+            json = vertx.fileSystem().readFileBlocking(ATTACK_JSON).toJsonObject();
+        } else if (vertx.fileSystem().existsBlocking(ATTACK_DEBUG_JSON)) {
+            log.info(String.format("Using %s configuration", ATTACK_DEBUG_JSON));
+            json = vertx.fileSystem().readFileBlocking(ATTACK_DEBUG_JSON).toJsonObject();
+        } else {
+            log.error("attack.json and attack-debug.json is missing");
+            return;
+        }
         UUID uuid = UUID.fromString(json.getString("uuid"));
         String uri = json.getString("uri");
 
