@@ -10,10 +10,6 @@ const db = pgPromise(config.db);
 
 app.use(express.urlencoded({extended: false}));
 
-app.get('/', (req, res) => {
-    res.sendFile("src/index.html", { root: __dirname });
-});
-
 app.get('/order/:id', (req, res) => {
     db.one(
         `SELECT * FROM Orders WHERE uuid=$1`,
@@ -57,7 +53,11 @@ app.post('/submit-order', (req, res) => {
     });
 });
 
-// app.use(express.static(path.join(__dirname, 'dist')));
+app.get('/', (req, res) => {
+    res.sendFile("dist/index.html", { root: __dirname });
+});
+
+app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.listen(config.web.port, () => console.log(`Listening on port \x1b[1m${config.web.port}\x1b[0m.`))
