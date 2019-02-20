@@ -22,6 +22,18 @@ class OrderForm extends React.Component {
         });
     }
 
+    isInputNonzero() {
+        if(this.state.numNa === 0 && this.state.numEu === 0 && this.state.numA === 0) {
+            return false;
+        }
+
+        if(this.state.duration === 0) {
+            return false;
+        }
+
+        return true;
+    }
+
     render() {
         return (
             <div className="mx-auto" style={{maxWidth: "600px"}}>
@@ -104,7 +116,7 @@ class OrderForm extends React.Component {
                                     <IntegerInputField className="form-control" name="duration"
                                                        value={this.state.duration} onInput={v => this.handleUpdate('duration', v)}/>
                                     <div className="input-group-append">
-                                        <div className="input-group-text">minutes</div>
+                                        <label className="input-group-text" htmlFor="duration">minutes</label>
                                     </div>
                                 </div>
                             </div>
@@ -113,18 +125,41 @@ class OrderForm extends React.Component {
                         <div className="form-group form-row">
                             <label className="col-2 col-form-label" htmlFor="target_url">Subtotal</label>
                             <div className="col-10 col-form-label">
-                                <span className="text-muted">
-                                    <strong>2</strong> &times; <strong>2</strong> =
-                                </span>
-                                &nbsp;
-                                <strong>14.88</strong> ₽
+                                {
+                                    this.isInputNonzero() ? <>
+                                        <span className="text-muted">
+                                            <strong>{this.props.baseCost}</strong>
+                                            {(this.state.numNa !== 0) && <>
+                                                &nbsp;+&nbsp;
+                                                <strong>{this.state.numNa}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costNa}</strong>
+                                            </>}
+                                            {(this.state.numEu !== 0) && <>
+                                                &nbsp;+&nbsp;
+                                                <strong>{this.state.numEu}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costEu}</strong>
+                                            </>}
+                                            {(this.state.numA !== 0) && <>
+                                                &nbsp;+&nbsp;
+                                                <strong>{this.state.numA}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costA}</strong>
+                                            </>}
+                                            &nbsp;=&nbsp;
+                                        </span>
+                                        <strong>{
+                                            (
+                                                this.props.baseCost
+                                                    + (this.state.numNa * this.state.duration * this.props.costNa)
+                                                    + (this.state.numEu * this.state.duration * this.props.costEu)
+                                                    + (this.state.numA * this.state.duration * this.props.costA)
+                                            ).toFixed(2)
+                                        }</strong> ₽
+                                    </> : <span className="text-muted">—</span>
+                                }
                             </div>
                         </div>
 
                         <hr />
 
                         <div className="text-center">
-                            <button type="submit" className="btn btn-lg btn-primary px-5">Submit</button>
+                            <button type="submit" className="btn btn-lg btn-primary px-5" disabled={!this.isInputNonzero()}>Submit</button>
                         </div>
                     </form>
                 </div> {/* .card */}
@@ -134,5 +169,5 @@ class OrderForm extends React.Component {
 }
 
 window.addEventListener('load', () => {
-    ReactDOM.render(<OrderForm/>, document.getElementById('order-form-container'));
+    ReactDOM.render(<OrderForm baseCost={50} costNa={0.09} costEu={0.11} costA={0.15}/>, document.getElementById('order-form-container'));
 });
