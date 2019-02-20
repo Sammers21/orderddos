@@ -2,80 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-class NodeCountFields extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            na: 10,
-            eu: 0,
-            a: 0
-        }
-    }
-
-    handleNumUpdate(key, e) {
-        const newValue = parseInt(e.target.value !== "" ? e.target.value : 0);
-
-        if(isNaN(newValue)) {
-            return false;
-        }
-
-        this.setState({
-            [key]: newValue
-        });
-
-        if(this.onValueUpdate) {
-            this.onValueUpdate();
-        }
-    }
-
-    render() {
-        return (
-            <div className="form-group">
-                <label>Node count</label>
-                <div className="row">
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <div className="input-group-prepend">
-                                <label className="input-group-text" htmlFor="num_nodes_na">North America</label>
-                            </div>
-                            <input className="form-control form-control-sm" type="text" name="num_nodes_na"
-                                   value={this.state.na} onChange={e => this.handleNumUpdate('na', e)} />
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <div className="input-group-prepend">
-                                <label className="input-group-text" htmlFor="num_nodes_eu">Europe</label>
-                            </div>
-                            <input className="form-control form-control-sm" type="text" name="num_nodes_eu"
-                                   value={this.state.eu} onChange={e => this.handleNumUpdate('eu', e)} />
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <div className="input-group-prepend">
-                                <label className="input-group-text" htmlFor="num_nodes_a">Asia</label>
-                            </div>
-                            <input className="form-control form-control-sm" type="text" name="num_nodes_a"
-                                   value={this.state.a} onChange={e => this.handleNumUpdate('a', e)} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-}
-
-class DurationField extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            value: 30
-        };
-    }
-
+class IntegerInputField extends React.Component {
     handleChange(e) {
         const newValue = parseInt(e.target.value !== "" ? e.target.value : 0);
 
@@ -83,32 +10,37 @@ class DurationField extends React.Component {
             return false;
         }
 
-        this.setState({
-            value: newValue
-        });
-
-        if(this.onValueUpdate) {
-            this.onValueUpdate();
+        if(this.props.onInput) {
+            this.props.onInput(newValue);
         }
     }
 
     render() {
         return (
-            <div className="col form-group">
-                <label htmlFor="duration">Duration</label>
-                <div className="input-group">
-                    <input className="form-control" type="text" id="duration" name="duration"
-                           value={this.state.value} onChange={e => this.handleChange(e)} />
-                    <div className="input-group-append">
-                        <div className="input-group-text">minutes</div>
-                    </div>
-                </div>
-            </div>
+            <input type="text" className={this.props.className} id={this.props.name} name={this.props.name}
+                   value={this.props.value} onChange={e => this.handleChange(e)} />
         );
     }
 }
 
 class OrderForm extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            numNa: 10,
+            numEu: 0,
+            numA: 0,
+            duration: 30
+        };
+    }
+
+    handleUpdate(key, newValue) {
+        this.setState({
+            [key]: newValue
+        });
+    }
+
     render() {
         return (
             <div className="mx-auto" style={{maxWidth: "600px"}}>
@@ -141,7 +73,38 @@ class OrderForm extends React.Component {
                             </div>
                         </div>
 
-                        <NodeCountFields/>
+                        <div className="form-group">
+                            <label>Node count</label>
+                            <div className="row">
+                                <div className="col">
+                                    <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <label className="input-group-text" htmlFor="num_nodes_na">North America</label>
+                                        </div>
+                                        <IntegerInputField className="form-control form-control-sm" name="num_nodes_na"
+                                               value={this.state.numNa} onInput={v => this.handleUpdate('numNa', v)} />
+                                    </div>
+                                </div>
+                                <div className="col">
+                                    <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <label className="input-group-text" htmlFor="num_nodes_eu">Europe</label>
+                                        </div>
+                                        <IntegerInputField className="form-control form-control-sm" name="num_nodes_eu"
+                                               value={this.state.numEu} onInput={v => this.handleUpdate('numEu', v)} />
+                                    </div>
+                                </div>
+                                <div className="col">
+                                    <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <label className="input-group-text" htmlFor="num_nodes_a">Asia</label>
+                                        </div>
+                                        <IntegerInputField className="form-control form-control-sm" name="num_nodes_a"
+                                               value={this.state.numA} onInput={v => this.handleUpdate('numA', v)} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div className="form-row">
                             <div className="col form-group">
@@ -153,7 +116,17 @@ class OrderForm extends React.Component {
                                     <input className="form-control" type="datetime-local" id="start_time" name="start_time" placeholder="2010-10-10 10:10:10" disabled />
                                 </div>
                             </div>
-                            <DurationField/>
+
+                            <div className="col form-group">
+                                <label htmlFor="duration">Duration</label>
+                                <div className="input-group">
+                                    <IntegerInputField className="form-control" name="duration"
+                                                       value={this.state.duration} onInput={v => this.handleUpdate('duration', v)}/>
+                                    <div className="input-group-append">
+                                        <div className="input-group-text">minutes</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="form-group form-row">
@@ -162,6 +135,7 @@ class OrderForm extends React.Component {
                                 <span className="text-muted">
                                     <strong>2</strong> &times; <strong>2</strong> =
                                 </span>
+                                &nbsp;
                                 <strong>14.88</strong> ₽
                             </div>
                         </div>
