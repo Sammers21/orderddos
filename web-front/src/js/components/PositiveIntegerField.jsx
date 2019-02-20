@@ -1,11 +1,11 @@
 
 import React from "react";
 
-class IntegerInputField extends React.Component {
+class PositiveIntegerField extends React.Component {
     handleChange(e) {
         const newValue = parseInt(e.target.value !== "" ? e.target.value : 0);
 
-        if(isNaN(newValue)) {
+        if(isNaN(newValue) || newValue < 0) {
             return false;
         }
 
@@ -22,4 +22,4 @@ class IntegerInputField extends React.Component {
     }
 }
 
-export default IntegerInputField;
+export default PositiveIntegerField;

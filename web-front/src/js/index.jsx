@@ -2,7 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import IntegerInputField from "./components/IntegerInputField.jsx";
+import PositiveIntegerField from "./components/PositiveIntegerField.jsx";
 
 class OrderForm extends React.Component {
     constructor(props) {
@@ -74,7 +74,7 @@ class OrderForm extends React.Component {
                                         <div className="input-group-prepend">
                                             <label className="input-group-text" htmlFor="num_nodes_na">North America</label>
                                         </div>
-                                        <IntegerInputField className="form-control form-control-sm" name="num_nodes_na"
+                                        <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_na"
                                                value={this.state.numNa} onInput={v => this.handleUpdate('numNa', v)} />
                                     </div>
                                 </div>
@@ -83,7 +83,7 @@ class OrderForm extends React.Component {
                                         <div className="input-group-prepend">
                                             <label className="input-group-text" htmlFor="num_nodes_eu">Europe</label>
                                         </div>
-                                        <IntegerInputField className="form-control form-control-sm" name="num_nodes_eu"
+                                        <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_eu"
                                                value={this.state.numEu} onInput={v => this.handleUpdate('numEu', v)} />
                                     </div>
                                 </div>
@@ -92,7 +92,7 @@ class OrderForm extends React.Component {
                                         <div className="input-group-prepend">
                                             <label className="input-group-text" htmlFor="num_nodes_a">Asia</label>
                                         </div>
-                                        <IntegerInputField className="form-control form-control-sm" name="num_nodes_a"
+                                        <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_a"
                                                value={this.state.numA} onInput={v => this.handleUpdate('numA', v)} />
                                     </div>
                                 </div>
@@ -113,7 +113,7 @@ class OrderForm extends React.Component {
                             <div className="col form-group">
                                 <label htmlFor="duration">Duration</label>
                                 <div className="input-group">
-                                    <IntegerInputField className="form-control" name="duration"
+                                    <PositiveIntegerField className="form-control" name="duration"
                                                        value={this.state.duration} onInput={v => this.handleUpdate('duration', v)}/>
                                     <div className="input-group-append">
                                         <label className="input-group-text" htmlFor="duration">minutes</label>
