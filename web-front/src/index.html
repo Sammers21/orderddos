@@ -111,10 +111,7 @@
 				<div class="form-group form-row">
 					<label class="col-2 col-form-label" for="target_url">Subtotal</label>
 					<div class="col-10 col-form-label">
-						<span class="text-muted">
-							<strong>2</strong> &times; <strong>2</strong> =
-						</span>
-						<strong>14.88</strong> ₽
+						<div id="resulted_price">0 $</div>
 					</div>
 				</div>
 
@@ -128,5 +125,27 @@
 	</div>
 
 	<!-- <script src="js/index.js"></script> -->
+
+    <script>
+
+        // TODO adjust the variable
+        const NODE_COST_PER_MINUTE = 0.001;
+
+        // TODO filed vaidation
+        $("#num_nodes_na, #num_nodes_eu, #num_nodes_a, #duration_hours, #duration_minutes").change(function () {
+            recalculateSubtotal()
+        });
+
+        function money(node_count, duration_minutes) {
+            return node_count * duration_minutes * NODE_COST_PER_MINUTE
+        }
+
+        function recalculateSubtotal() {
+            var nodes_total = +$("#num_nodes_a").val() + +$("#num_nodes_eu").val() + +$("#num_nodes_na").val();
+            var minutes = +$("#duration_hours").val() * 3600 + +$("#duration_minutes").val();
+            $("#resulted_price").text(money(nodes_total, minutes) + " $")
+        }
+
+    </script>
 </body>
 </html>
