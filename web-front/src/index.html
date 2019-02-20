@@ -16,13 +16,13 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </head>
 <body>
-	<h1 class="text-center mt-4">Drankow & sons™</h1>
+	<h1 class="text-center mt-4">order-ddos.com</h1>
 
 	<hr />
 
 	<div class="mx-auto" style="max-width: 600px;">
 		<p>
-			Evaluate DDoS-vulnerability of your <s>competitors</s> servers.
+			Obtain insides on how your system will behave under a DDoS attack of any scale
 		</p>
 
 		<div class="card">
@@ -37,7 +37,7 @@
 						</div>
 					</div>
 					<small class="form-text text-muted">
-						You'll be personally contacted by Pavel Drankov, our CEO.
+						You'll be contacted in 3 business days in order to verify the resource ownership.
 					</small>
 				</div>
 
@@ -46,19 +46,22 @@
 				<div class="form-group form-row">
 					<label class="col-2 col-form-label" for="target_url">URL</label>
 					<div class="col-10">
-						<input class="form-control" type="text" id="target_url" name="target_url" placeholder="https://github.com/Sammers21/" />
+						<input class="form-control" type="text" id="target_url" name="target_url" placeholder="https://exmple.com/" />
 					</div>
+                    <small class="form-text text-muted">
+                        The recourse URL to perform a DDoS attack.
+                    </small>
 				</div>
 
 				<div class="form-group">
-					<label>Node count</label>
+					<label>Nodes count per region</label>
 					<div class="row">
 						<div class="col">
 							<div class="input-group input-group-sm">
 								<div class="input-group-prepend">
 									<label class="input-group-text" for="num_nodes_na">North America</label>
 								</div>
-								<input class="form-control form-control-sm" type="text" id="num_nodes_na" name="num_nodes_na" placeholder="1488" value="10" />
+								<input class="form-control form-control-sm" type="text" id="num_nodes_na" name="num_nodes_na" placeholder="0" value="0" />
 							</div>
 						</div>
 						<div class="col">
@@ -66,7 +69,7 @@
 								<div class="input-group-prepend">
 									<label class="input-group-text" for="num_nodes_eu">Europe</label>
 								</div>
-								<input class="form-control form-control-sm" type="text" id="num_nodes_eu" name="num_nodes_eu" placeholder="1488" />
+								<input class="form-control form-control-sm" type="text" id="num_nodes_eu" name="num_nodes_eu" placeholder="0" />
 							</div>
 						</div>
 						<div class="col">
@@ -74,31 +77,35 @@
 								<div class="input-group-prepend">
 									<label class="input-group-text" for="num_nodes_a">Asia</label>
 								</div>
-								<input class="form-control form-control-sm" type="text" id="num_nodes_a" name="num_nodes_a" placeholder="1488" />
+								<input class="form-control form-control-sm" type="text" id="num_nodes_a" name="num_nodes_a" placeholder="0" />
 							</div>
 						</div>
 					</div>
+                    <small class="form-text text-muted">
+                        Chose the amount and location of nodes used for the attack.
+                    </small>
 				</div>
 
 				<div class="form-row">
-					<div class="col form-group">
-						<label for="start_time">Start time</label>
-						<div class="input-group">
-							<div class="input-group-prepend">
-								<div class="input-group-text"><input type="checkbox" name="" /></div>
-							</div>
-							<input class="form-control" type="datetime-local" id="start_time" name="start_time" placeholder="2010-10-10 10:10:10" disabled />
-						</div>
-					</div>
-					<div class="col form-group">
-						<label for="duration">Duration</label>
-						<div class="input-group">
-							<input class="form-control" type="text" id="duration" name="duration" placeholder="47" value="47" />
-							<div class="input-group-append">
-								<div class="input-group-text">minutes</div>
-							</div>
-						</div>
-					</div>
+                    <label>DDoS attack duration</label>
+                    <div class="row">
+                        <div class="col form-group">
+                            <div class="input-group">
+                                <input class="form-control" type="text" id="duration_hours" name="duration" placeholder="0" value="0" />
+                                <div class="input-group-append">
+                                    <div class="input-group-text">hours</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col form-group">
+                            <div class="input-group">
+                                <input class="form-control" type="text" id="duration_minutes" name="duration" placeholder="0" value="0" />
+                                <div class="input-group-append">
+                                    <div class="input-group-text">minutes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 				</div>
 
 				<div class="form-group form-row">
