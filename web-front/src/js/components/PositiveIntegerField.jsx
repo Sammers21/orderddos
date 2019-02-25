@@ -17,6 +17,7 @@ class PositiveIntegerField extends React.Component {
     render() {
         return (
             <input type="text" className={this.props.className} id={this.props.name} name={this.props.name}
+                   autoComplete="off"
                    value={this.props.value} onChange={e => this.handleChange(e)} />
         );
     }

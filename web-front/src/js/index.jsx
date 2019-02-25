@@ -101,6 +101,7 @@ class OrderForm extends React.Component {
                                     <div className="input-group">
                                         <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.validateEmail()) ? " is-invalid" : "")}
                                                type="text" id="email" name="email"
+                                               autoFocus={true} autoComplete="email"
                                                placeholder="titantins@gmail.com"
                                                value={this.state.email}
                                                onChange={e => this.handleEmailUpdate(e.target.value)} />
@@ -123,6 +124,7 @@ class OrderForm extends React.Component {
                                 <div className="input-group">
                                     <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.validateTargetUrl()) ? " is-invalid" : "")}
                                            type="text" id="target_url" name="target_url"
+                                           autoComplete="url"
                                            placeholder="https://github.com/Sammers21/"
                                            value={this.state.targetUrl}
                                            onChange={e => this.handleTargetUrlUpdate(e.target.value)} />
