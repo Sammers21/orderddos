@@ -67,8 +67,7 @@
                     </tr>
                     <tr>
                         <th scope="row">Received</th>
-                        <!-- <td>2019-02-25 03:11:03 <em>(UTC+3)</em></td> -->
-                        <td>{{ submissionTime }} <em>(UTC{{ submissionTz }})</em></td>
+                        <td>{{ submissionTime }} <em>({{ submissionTz }})</em></td>
                     </tr>
                     <tr>
                         <th scope="row">Node counts</th>
@@ -109,7 +108,11 @@
                     <tr>
                         <th scope="row">Scheduled start time</th>
                         <td>
-                            <em>right away</em>
+                            {{#if startTime}}
+                                {{ startTime }} <em>({{ startTz }})</em>
+                            {{else}}
+                                <em>right away</em>
+                            {{/if}}
                         </td>
                     </tr>
                 </table>
@@ -118,7 +121,7 @@
 
                 <div class="row px-3 py-2">
                     <div class="col-3 text-muted">
-                        2019-02-25 03:11:03
+                        {{ submissionTime }}
                     </div>
                     <div class="col-9">
                         Order received.

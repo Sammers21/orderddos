@@ -32,6 +32,18 @@ const formatDateTime = dt => {
         + ` ${zeroPad(dt.getHours(), 2)}:${zeroPad(dt.getMinutes(), 2)}:${zeroPad(dt.getSeconds(), 2)}`
 };
 
+const formatTimezone = tzOffset => {
+    if(tzOffset < 0) {
+        return `UTC+${Math.round(-tzOffset / 60)}`;
+    }
+    else if(tzOffset === 0) {
+        return "UTC";
+    }
+    else {
+        return `UTC-${Math.round(tzOffset / 60)}`;
+    }
+}
+
 app.get('/order/:id', (req, res) => {
     db.one(
         `SELECT * FROM Orders WHERE uuid=$1`,
@@ -42,30 +54,19 @@ app.get('/order/:id', (req, res) => {
         if(data.duration.hours) duration += 60 * data.duration.hours;
         if(data.duration.minutes) duration += data.duration.minutes;
 
-        let submissionTz = -data.t_submitted.getTimezoneOffset() / 60;
-
-        if(submissionTz > 0) {
-            submissionTz = '+' + submissionTz;
-        }
-        else if(submissionTz === 0) {
-            submissionTz = "";
-        }
-
         res.render("order-details.html", {
             uuid: data.uuid,
             submissionTime: formatDateTime(data.t_submitted),
-            submissionTz: submissionTz,
+            submissionTz: formatTimezone(data.t_submitted.getTimezoneOffset()),
             email: data.email,
             targetUrl: data.target_url,
             numNa: data.num_nodes_by_region.na,
             numEu: data.num_nodes_by_region.eu,
             numA: data.num_nodes_by_region.as,
-            duration: duration
+            duration: duration,
+            startTime: data.t_start ? formatDateTime(data.t_start) : null,
+            startTz: data.t_start ? formatTimezone(data.t_start.getTimezoneOffset()) : ""
         });
-
-        // res.send(`<h2>Order ${req.params.id}</h2>
-        //     <p><pre>${JSON.stringify(data, null, 4)}</pre>
-        //     <p><a href="/order">Back to order form</a>`);
     }).catch(err => {
         res.status(404).send(`<h2>Not found</h2>
             <p><pre style="color: red;">${err}</pre>
@@ -78,7 +79,7 @@ app.post('/submit-order', (req, res) => {
 
     // TODO: process urlencoded requests separately for no-JS clients
 
-    // FIX: time gets written with current time zone, but in UTC
+    // FIX: submission time gets written with current time zone, but in UTC
 
     db.one(
         `INSERT INTO Orders (email, target_url, num_nodes_by_region, t_start, duration)
