@@ -8,10 +8,16 @@ const pgPromise = require('pg-promise')();
 const app = express();
 const db = pgPromise(config.db);
 
-var exphbs  = require('express-handlebars');
+var exphbs = require('express-handlebars');
+
+const hbsInstance = exphbs.create({
+    helpers: {
+        ifEq: (a, b, options) => a === b ? options.fn(this) : options.inverse(this)
+    }
+});
 
 // app.engine('html', exphbs({ defaultLayout: 'main' }));
-app.engine('html', exphbs({ }));
+app.engine('html', hbsInstance.engine);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -57,6 +63,7 @@ app.get('/order/:id', (req, res) => {
         // TODO: display times, except startTime, in the client's timezone (UTC for no-JS clients)
         res.render("order-details.html", {
             uuid: data.uuid,
+            status: data.status,
             submissionTime: formatDateTime(data.t_submitted),
             submissionTz: formatTimezone(data.t_submitted.getTimezoneOffset()),
             email: data.email,

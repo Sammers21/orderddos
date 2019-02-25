@@ -40,11 +40,21 @@
                     <tr>
                         <th scope="row">Status</th>
                         <td>
-                            <span class="badge badge-secondary">Unconfirmed</span>
-                            <!-- <span class="badge badge-danger">Rejected</span> -->
-                            <!-- <span class="badge badge-primary">Scheduled</span> -->
-                            <!-- <span class="badge badge-success">Executing</span> -->
-                            <!-- <span class="badge badge-light">Completed</span> -->
+                            {{#ifEq status 'NEW'}}
+                                <span class="badge badge-secondary">Unconfirmed</span>
+                            {{/ifEq}}
+                            {{#ifEq status 'SCHEDULED'}}
+                                <span class="badge badge-primary">Scheduled</span>
+                            {{/ifEq}}
+                            {{#ifEq status 'REJECTED'}}
+                                <span class="badge badge-danger">Rejected</span>
+                            {{/ifEq}}
+                            {{#ifEq status 'ONGOING'}}
+                                <span class="badge badge-success">Executing</span>
+                            {{/ifEq}}
+                            {{#ifEq status 'DONE'}}
+                                <span class="badge badge-light">Completed</span>
+                            {{/ifEq}}
                         </td>
                     </tr>
                     <tr>
