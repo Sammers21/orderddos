@@ -54,6 +54,7 @@ app.get('/order/:id', (req, res) => {
         if(data.duration.hours) duration += 60 * data.duration.hours;
         if(data.duration.minutes) duration += data.duration.minutes;
 
+        // TODO: display times, except startTime, in the client's timezone (UTC for no-JS clients)
         res.render("order-details.html", {
             uuid: data.uuid,
             submissionTime: formatDateTime(data.t_submitted),
@@ -75,16 +76,16 @@ app.get('/order/:id', (req, res) => {
 });
 
 app.post('/submit-order', (req, res) => {
-    const { email, targetUrl, numNa, numEu, numA, duration, startTime } = req.body;
-
     // TODO: process urlencoded requests separately for no-JS clients
 
-    // FIX: submission time gets written with current time zone, but in UTC
+    const { email, targetUrl, numNa, numEu, numA, duration, startTime } = req.body;
 
+    // NOTE: use the default for t_submitted as soon as it's fixed in the schema
     db.one(
-        `INSERT INTO Orders (email, target_url, num_nodes_by_region, t_start, duration)
-         VALUES ($1, $2, $3, $4, $5) RETURNING uuid`,
+        `INSERT INTO Orders (t_submitted, email, target_url, num_nodes_by_region, t_start, duration)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid`,
         [
+            new Date(),
             email,
             targetUrl,
             JSON.stringify({
