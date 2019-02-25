@@ -128,6 +128,7 @@
                     </div>
                 </div>
 
+                {{#if false}}
                 <div class="row px-3 py-2">
                     <div class="col-3 text-muted">
                         2019-02-25 03:11:03
@@ -171,13 +172,24 @@
                         2019-02-25 03:11:03
                     </div>
                     <div class="col-9">
+                        Stopping the DDoS attack...
+                    </div>
+                </div>
+
+                <div class="row px-3 py-2">
+                    <div class="col-3 text-muted">
+                        2019-02-25 03:11:03
+                    </div>
+                    <div class="col-9">
                         DDoS attack has been completed.
                     </div>
                 </div>
+                {{/if}}
             </div>
         </div>
     </div>
 
+    {{#if false}}
     <style>
         .axis {
           font: 10px sans-serif;
@@ -320,5 +332,6 @@
           d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
         });
     </script>
+    {{/if}}
 </body>
 </html>
