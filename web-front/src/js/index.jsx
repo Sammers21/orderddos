@@ -10,11 +10,15 @@ class OrderForm extends React.Component {
         super(props);
 
         this.state = {
+            email: "",
+            targetUrl: "",
             numNa: 10,
             numEu: 0,
             numA: 0,
             duration: 30,
-            startTime: null
+            startTime: null,
+
+            hadSubmitAttempt: false
         };
     }
 
@@ -22,6 +26,14 @@ class OrderForm extends React.Component {
         this.setState({
             [key]: newValue
         });
+    }
+
+    handleEmailUpdate(newEmail) {
+        this.setState({ email: newEmail });
+    }
+
+    handleTargetUrlUpdate(newTargetUrl) {
+        this.setState({ targetUrl: newTargetUrl });
     }
 
     isInputNonzero() {
@@ -36,6 +48,15 @@ class OrderForm extends React.Component {
         return true;
     }
 
+    handleSubmit(e) {
+        console.log(this.state);
+
+        this.setState({ hadSubmitAttempt: true });
+
+        e.preventDefault();
+        return false;
+    }
+
     render() {
         return (
             <div className="mx-auto" style={{maxWidth: "600px"}}>
@@ -44,14 +65,23 @@ class OrderForm extends React.Component {
                 </p>
 
                 <div className="card" id="form-order">
-                    <form className="card-body" action="/submit-order" method="POST">
+                    <form className="card-body" action="/submit-order" method="POST" onSubmit={e => this.handleSubmit(e)}>
                         <h3 className="text-center mb-4">Order a DDoS attack</h3>
 
                         <div className="form-group">
                             <div className="form-row">
                                 <label className="col-2 col-form-label" htmlFor="email">E-mail</label>
                                 <div className="col-10">
-                                    <input className="form-control" type="text" id="email" name="email" placeholder="titantins@gmail.com" />
+                                    <div className="input-group">
+                                        <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.state.email.match('[^@]+@[^@]+')) ? " is-invalid" : "")}
+                                               type="text" id="email" name="email"
+                                               placeholder="titantins@gmail.com"
+                                               value={this.state.email}
+                                               onChange={e => this.handleEmailUpdate(e.target.value)} />
+                                        <div className="invalid-feedback">
+                                          Please provide an E-mail address.
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <small className="form-text text-muted">
@@ -64,7 +94,16 @@ class OrderForm extends React.Component {
                         <div className="form-group form-row">
                             <label className="col-2 col-form-label" htmlFor="target_url">URL</label>
                             <div className="col-10">
-                                <input className="form-control" type="text" id="target_url" name="target_url" placeholder="https://github.com/Sammers21/" />
+                                <div className="input-group">
+                                    <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.state.targetUrl.match(/\w/)) ? " is-invalid" : "")}
+                                           type="text" id="target_url" name="target_url"
+                                           placeholder="https://github.com/Sammers21/"
+                                           value={this.state.targetUrl}
+                                           onChange={e => this.handleTargetUrlUpdate(e.target.value)} />
+                                    <div className="invalid-feedback">
+                                      Please provide a target URL.
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -156,7 +195,10 @@ class OrderForm extends React.Component {
                         <hr />
 
                         <div className="text-center">
-                            <button type="submit" className="btn btn-lg btn-primary px-5" disabled={!this.isInputNonzero()}>Submit</button>
+                            <button type="submit" className="btn btn-lg btn-primary px-5"
+                                    disabled={!this.isInputNonzero()}>
+                                Submit
+                            </button>
                         </div>
                     </form>
                 </div> {/* .card */}
