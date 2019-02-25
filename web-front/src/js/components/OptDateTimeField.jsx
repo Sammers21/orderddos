@@ -53,7 +53,7 @@ class OptDateTimeField extends React.Component {
         return new Date(this.state.value);
     }
 
-    handleCheckboxChange(newValue) {
+    handleEnabledChange(newValue) {
         this.setState({ enabled: newValue });
 
         this.props.onInput(newValue ? this.dateValue() : null);
@@ -65,6 +65,14 @@ class OptDateTimeField extends React.Component {
                 this.props.onInput(this.dateValue());
             }
         });
+    }
+
+    handleDoubleClick() {
+        if(!this.state.enabled) {
+            this.handleEnabledChange(true);
+        }
+
+        return true;
     }
 
     handleFocus() {
@@ -95,11 +103,11 @@ class OptDateTimeField extends React.Component {
 
     render() {
         return (
-            <div className="input-group">
+            <div className="input-group" onDoubleClick={() => this.handleDoubleClick()}>
                 <div className="input-group-prepend">
                     <label className="input-group-text">
                         <input type="checkbox" checked={this.state.enabled}
-                               onChange={e => this.handleCheckboxChange(e.target.checked)} />
+                               onChange={e => this.handleEnabledChange(e.target.checked)} />
                    </label>
                 </div>
                 <input className="form-control" type="datetime-local" id={this.props.name} name={this.props.name}
