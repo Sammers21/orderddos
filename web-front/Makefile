@@ -1,10 +1,10 @@
 
-distribute: dist dist/js dist/order.html dist/home.html
+distribute: dist dist/js/order.js dist/order.html dist/home.html
 
 dist:
 	mkdir -p dist
 
-dist/js:
+dist/js/order.js: src/js/order.jsx src/js/components/*.jsx
 	./node_modules/.bin/webpack
 
 dist/order.html:
@@ -15,3 +15,5 @@ dist/home.html:
 
 clean:
 	rm -r ./dist
+
+.PHONY: distribute clean

@@ -18,22 +18,30 @@ class OrderForm extends React.Component {
             duration: 30,
             startTime: null,
 
-            hadSubmitAttempt: false
+            wasSubmitAttempted: false,
+            status: 'INITIAL'
         };
     }
 
+    resetStatus() {
+        if(this.state.status === 'SUCCESS') {
+            this.setState({
+                wasSubmitAttempted: false,
+                status: 'INITIAL'
+            });
+        }
+    }
+
     handleUpdate(key, newValue) {
-        this.setState({
-            [key]: newValue
-        });
+        this.setState({ [key]: newValue }, () => this.resetStatus());
     }
 
     handleEmailUpdate(newEmail) {
-        this.setState({ email: newEmail });
+        this.setState({ email: newEmail }, () => this.resetStatus());
     }
 
     handleTargetUrlUpdate(newTargetUrl) {
-        this.setState({ targetUrl: newTargetUrl });
+        this.setState({ targetUrl: newTargetUrl }, () => this.resetStatus());
     }
 
     isInputNonzero() {
@@ -73,10 +81,16 @@ class OrderForm extends React.Component {
     }
 
     handleSubmit(e) {
-        this.setState({ hadSubmitAttempt: true });
+        this.setState({ wasSubmitAttempted: true });
 
         if(this.isValid()) {
             console.log(this.state);
+
+            this.setState({ status: 'SENDING' });
+
+            setTimeout(() => {
+                this.setState({ status: 'SUCCESS' });
+            }, 500);
         }
 
         e.preventDefault();
@@ -98,7 +112,7 @@ class OrderForm extends React.Component {
                             <label className="col-2 col-form-label" htmlFor="email">E-mail</label>
                             <div className="col-10">
                                 <div className="input-group">
-                                    <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.validateEmail()) ? " is-invalid" : "")}
+                                    <input className={"form-control" + ((this.state.wasSubmitAttempted && !this.validateEmail()) ? " is-invalid" : "")}
                                            type="text" id="email" name="email"
                                            autoFocus={true} autoComplete="email"
                                            placeholder="titantins@gmail.com"
@@ -121,7 +135,7 @@ class OrderForm extends React.Component {
                         <label className="col-2 col-form-label" htmlFor="target_url">URL</label>
                         <div className="col-10">
                             <div className="input-group">
-                                <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.validateTargetUrl()) ? " is-invalid" : "")}
+                                <input className={"form-control" + ((this.state.wasSubmitAttempted && !this.validateTargetUrl()) ? " is-invalid" : "")}
                                        type="text" id="target_url" name="target_url"
                                        autoComplete="url"
                                        placeholder="https://github.com/Sammers21/"
@@ -222,9 +236,15 @@ class OrderForm extends React.Component {
                     <hr />
 
                     <div className="text-center">
-                        <button type="submit" className="btn btn-lg btn-primary px-5"
-                                disabled={!this.isInputNonzero() || (this.state.hadSubmitAttempt && !this.isValid())}>
-                            Submit
+                        <button type="submit" className={"btn btn-lg " + (this.state.status === 'SUCCESS' ? "btn-success" : "btn-primary") + " px-5 text-center"}
+                                disabled={this.state.status !== 'INITIAL' || !this.isInputNonzero() || (this.state.wasSubmitAttempted && !this.isValid())}>
+                            {
+                                this.state.status === 'SENDING' ? (
+                                    <img src="/spinner.svg" style={{'height': '30px'}} />
+                                ) : this.state.status === 'SUCCESS' ? (
+                                    <img src="/tick.svg" style={{'height': '30px', 'opacity': '0.75'}} />
+                                ) : <>Submit</>
+                            }
                         </button>
                     </div>
                 </form>
