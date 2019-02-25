@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import PositiveIntegerField from "./components/PositiveIntegerField.jsx";
+import OptDateTimeField from "./components/OptDateTimeField.jsx";
 
 class OrderForm extends React.Component {
     constructor(props) {
@@ -12,7 +13,8 @@ class OrderForm extends React.Component {
             numNa: 10,
             numEu: 0,
             numA: 0,
-            duration: 30
+            duration: 30,
+            startTime: null
         };
     }
 
@@ -75,7 +77,7 @@ class OrderForm extends React.Component {
                                             <label className="input-group-text" htmlFor="num_nodes_na">North America</label>
                                         </div>
                                         <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_na"
-                                               value={this.state.numNa} onInput={v => this.handleUpdate('numNa', v)} />
+                                                              value={this.state.numNa} onInput={v => this.handleUpdate('numNa', v)} />
                                     </div>
                                 </div>
                                 <div className="col">
@@ -84,7 +86,7 @@ class OrderForm extends React.Component {
                                             <label className="input-group-text" htmlFor="num_nodes_eu">Europe</label>
                                         </div>
                                         <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_eu"
-                                               value={this.state.numEu} onInput={v => this.handleUpdate('numEu', v)} />
+                                                               value={this.state.numEu} onInput={v => this.handleUpdate('numEu', v)} />
                                     </div>
                                 </div>
                                 <div className="col">
@@ -93,7 +95,7 @@ class OrderForm extends React.Component {
                                             <label className="input-group-text" htmlFor="num_nodes_a">Asia</label>
                                         </div>
                                         <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_a"
-                                               value={this.state.numA} onInput={v => this.handleUpdate('numA', v)} />
+                                                              value={this.state.numA} onInput={v => this.handleUpdate('numA', v)} />
                                     </div>
                                 </div>
                             </div>
@@ -102,19 +104,14 @@ class OrderForm extends React.Component {
                         <div className="form-row">
                             <div className="col form-group">
                                 <label htmlFor="start_time">Start time</label>
-                                <div className="input-group">
-                                    <div className="input-group-prepend">
-                                        <div className="input-group-text"><input type="checkbox" name="" /></div>
-                                    </div>
-                                    <input className="form-control" type="datetime-local" id="start_time" name="start_time" placeholder="2010-10-10 10:10:10" disabled />
-                                </div>
+                                <OptDateTimeField name="start_time" onInput={newDate => this.handleUpdate('startTime', newDate)} />
                             </div>
 
                             <div className="col form-group">
                                 <label htmlFor="duration">Duration</label>
                                 <div className="input-group">
                                     <PositiveIntegerField className="form-control" name="duration"
-                                                       value={this.state.duration} onInput={v => this.handleUpdate('duration', v)}/>
+                                                          value={this.state.duration} onInput={v => this.handleUpdate('duration', v)}/>
                                     <div className="input-group-append">
                                         <label className="input-group-text" htmlFor="duration">minutes</label>
                                     </div>
