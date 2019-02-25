@@ -5,6 +5,17 @@ import ReactDOM from "react-dom";
 import PositiveIntegerField from "./components/PositiveIntegerField.jsx";
 import OptDateTimeField from "./components/OptDateTimeField.jsx";
 
+const formatMoneyAmount = x => {
+    let s = x.toFixed(2);
+
+    for(let i = s.length - 6; i > 0; i -= 3) {
+        console.log(i);
+        s = s.slice(0, i) + '\xa0' + s.slice(i);
+    }
+
+    return s;
+};
+
 class OrderForm extends React.Component {
     constructor(props) {
         super(props);
@@ -245,13 +256,13 @@ class OrderForm extends React.Component {
                                         </>} =&nbsp;
                                     </span>
                                     <strong>{
-                                        (
+                                        formatMoneyAmount(
                                             this.props.baseCost
                                                 + (this.state.numNa * this.state.duration * this.props.costNa)
                                                 + (this.state.numEu * this.state.duration * this.props.costEu)
                                                 + (this.state.numA * this.state.duration * this.props.costA)
-                                        ).toFixed(2)
-                                    }</strong> ₽
+                                        )
+                                    }</strong>&nbsp;₽
                                 </> : <span className="text-muted">—</span>
                             }
                         </div>
