@@ -234,19 +234,15 @@ class OrderForm extends React.Component {
                                 this.isInputNonzero() ? <>
                                     <span className="text-muted">
                                         <strong>{this.props.baseCost}</strong>
-                                        {(this.state.numNa !== 0) && <>
-                                            &nbsp;+&nbsp;
+                                        {(this.state.numNa !== 0) && <> +&nbsp;
                                             <strong>{this.state.numNa}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costNa}</strong>
                                         </>}
-                                        {(this.state.numEu !== 0) && <>
-                                            &nbsp;+&nbsp;
+                                        {(this.state.numEu !== 0) && <> +&nbsp;
                                             <strong>{this.state.numEu}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costEu}</strong>
                                         </>}
-                                        {(this.state.numA !== 0) && <>
-                                            &nbsp;+&nbsp;
+                                        {(this.state.numA !== 0) && <> +&nbsp;
                                             <strong>{this.state.numA}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costA}</strong>
-                                        </>}
-                                        &nbsp;=&nbsp;
+                                        </>} =&nbsp;
                                     </span>
                                     <strong>{
                                         (
