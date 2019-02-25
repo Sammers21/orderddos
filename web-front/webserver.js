@@ -54,7 +54,11 @@ app.post('/submit-order', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile("dist/index.html", { root: __dirname });
+    res.sendFile("dist/home.html", { root: __dirname });
+});
+
+app.get('/order', (req, res) => {
+    res.sendFile("dist/order.html", { root: __dirname });
 });
 
 app.use(express.static(path.join(__dirname, 'dist')));
