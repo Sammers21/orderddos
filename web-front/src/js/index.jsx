@@ -48,10 +48,36 @@ class OrderForm extends React.Component {
         return true;
     }
 
-    handleSubmit(e) {
-        console.log(this.state);
+    validateEmail() {
+        return this.state.email.match('[^@]+@[^@]+');
+    }
 
+    validateTargetUrl() {
+        return this.state.targetUrl.match(/\S/);
+    }
+
+    isValid() {
+        if(!this.isInputNonzero()) {
+            return false;
+        }
+
+        if(!this.validateEmail()) {
+            return false;
+        }
+
+        if(!this.validateTargetUrl()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    handleSubmit(e) {
         this.setState({ hadSubmitAttempt: true });
+
+        if(this.isValid()) {
+            console.log(this.state);
+        }
 
         e.preventDefault();
         return false;
@@ -73,7 +99,7 @@ class OrderForm extends React.Component {
                                 <label className="col-2 col-form-label" htmlFor="email">E-mail</label>
                                 <div className="col-10">
                                     <div className="input-group">
-                                        <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.state.email.match('[^@]+@[^@]+')) ? " is-invalid" : "")}
+                                        <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.validateEmail()) ? " is-invalid" : "")}
                                                type="text" id="email" name="email"
                                                placeholder="titantins@gmail.com"
                                                value={this.state.email}
@@ -95,7 +121,7 @@ class OrderForm extends React.Component {
                             <label className="col-2 col-form-label" htmlFor="target_url">URL</label>
                             <div className="col-10">
                                 <div className="input-group">
-                                    <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.state.targetUrl.match(/\w/)) ? " is-invalid" : "")}
+                                    <input className={"form-control" + ((this.state.hadSubmitAttempt && !this.validateTargetUrl()) ? " is-invalid" : "")}
                                            type="text" id="target_url" name="target_url"
                                            placeholder="https://github.com/Sammers21/"
                                            value={this.state.targetUrl}
