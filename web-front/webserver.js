@@ -8,16 +8,64 @@ const pgPromise = require('pg-promise')();
 const app = express();
 const db = pgPromise(config.db);
 
+var exphbs  = require('express-handlebars');
+
+// app.engine('html', exphbs({ defaultLayout: 'main' }));
+app.engine('html', exphbs({ }));
+app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname, 'views'));
+
 app.use(express.json());
+
+const zeroPad = (x, l) => {
+    x = x.toString();
+
+    while(x.length < l) {
+        x = '0' + x;
+    }
+
+    return x;
+};
+
+const formatDateTime = dt => {
+    return `${zeroPad(dt.getFullYear(), 4)}-${zeroPad(dt.getMonth() + 1, 2)}-${zeroPad(dt.getDate(), 2)}`
+        + ` ${zeroPad(dt.getHours(), 2)}:${zeroPad(dt.getMinutes(), 2)}:${zeroPad(dt.getSeconds(), 2)}`
+};
 
 app.get('/order/:id', (req, res) => {
     db.one(
         `SELECT * FROM Orders WHERE uuid=$1`,
         [req.params.id]
     ).then(data => {
-        res.send(`<h2>Order ${req.params.id}</h2>
-            <p><pre>${JSON.stringify(data, null, 4)}</pre>
-            <p><a href="/order">Back to order form</a>`);
+        let duration = 0;
+
+        if(data.duration.hours) duration += 60 * data.duration.hours;
+        if(data.duration.minutes) duration += data.duration.minutes;
+
+        let submissionTz = -data.t_submitted.getTimezoneOffset() / 60;
+
+        if(submissionTz > 0) {
+            submissionTz = '+' + submissionTz;
+        }
+        else if(submissionTz === 0) {
+            submissionTz = "";
+        }
+
+        res.render("order-details.html", {
+            uuid: data.uuid,
+            submissionTime: formatDateTime(data.t_submitted),
+            submissionTz: submissionTz,
+            email: data.email,
+            targetUrl: data.target_url,
+            numNa: data.num_nodes_by_region.na,
+            numEu: data.num_nodes_by_region.eu,
+            numA: data.num_nodes_by_region.as,
+            duration: duration
+        });
+
+        // res.send(`<h2>Order ${req.params.id}</h2>
+        //     <p><pre>${JSON.stringify(data, null, 4)}</pre>
+        //     <p><a href="/order">Back to order form</a>`);
     }).catch(err => {
         res.status(404).send(`<h2>Not found</h2>
             <p><pre style="color: red;">${err}</pre>
@@ -29,6 +77,8 @@ app.post('/submit-order', (req, res) => {
     const { email, targetUrl, numNa, numEu, numA, duration, startTime } = req.body;
 
     // TODO: process urlencoded requests separately for no-JS clients
+
+    // FIX: time gets written with current time zone, but in UTC
 
     db.one(
         `INSERT INTO Orders (email, target_url, num_nodes_by_region, t_start, duration)

@@ -1,0 +1,315 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New order — Drankow & sons™</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!-- <link rel="stylesheet" href="css/normalize.css"> -->
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1 class="text-center mt-4">
+        <a class="text-dark" href="/">Drankow & sons™</a>
+    </h1>
+
+    <hr />
+
+    <div class="mx-auto" style="max-width: 1000px;">
+        <div class="card mb-5">
+            <div class="card-header d-flex justify-content-between text-muted">
+                <span>Order details</span>
+                <a href="/order"><em>Back to order form</em></a>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tr>
+                        <th scope="row">UUID</th>
+                        <td>
+                            <a class="text-monospace text-dark" href="/order/{{ uuid }}">{{ uuid }}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Status</th>
+                        <td>
+                            <span class="badge badge-secondary">Unconfirmed</span>
+                            <!-- <span class="badge badge-danger">Rejected</span> -->
+                            <!-- <span class="badge badge-primary">Scheduled</span> -->
+                            <!-- <span class="badge badge-success">Executing</span> -->
+                            <!-- <span class="badge badge-light">Completed</span> -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">E-mail</th>
+                        <td>
+                            <a class="text-dark" href="maito:{{ email }}">{{ email }}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Target URL</th>
+                        <td>
+                            <div style="overflow: scroll;">
+                                <div style="overflow: visible; width: 1px;">
+                                    <span class="text-monospace text-muted" style="white-space: nowrap;">
+                                        {{ targetUrl }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Received</th>
+                        <!-- <td>2019-02-25 03:11:03 <em>(UTC+3)</em></td> -->
+                        <td>{{ submissionTime }} <em>(UTC{{ submissionTz }})</em></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Node counts</th>
+                        <td>
+                            <table class="table table-sm table-borderless m-0 w-auto">
+                                <tr class="table-light">
+                                    <td class="py-0"><em>North America</em></td>
+                                    <td class="py-0"><span class="badge {{#if numNa}}badge-primary{{else}}badge-muted{{/if}}">{{ numNa }}</span></td>
+                                </tr>
+                                <tr class="table-light">
+                                    <td class="py-0"><em>Europe</em></td>
+                                    <td class="py-0"><span class="badge {{#if numEu}}badge-primary{{else}}badge-muted{{/if}}">{{ numEu }}</span></td>
+                                </tr>
+                                <tr class="table-light">
+                                    <td class="py-0"><em>Asia</em></td>
+                                    <td class="py-0"><span class="badge {{#if numA}}badge-primary{{else}}badge-muted{{/if}}">{{ numA }}</span></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Duration</th>
+                        <td>
+                            <strong class="badge badge-dark" style="font-size: 1em;">{{ duration }}</strong> minutes
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Total cost</th>
+                        <!-- <td><strong>120.00</strong> ₽</td> -->
+                        <td>&mdash;</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Scheduled start time</th>
+                        <td>
+                            <em>right away</em>
+                        </td>
+                    </tr>
+                </table>
+
+                <hr />
+
+                <div class="row px-3 py-2">
+                    <div class="col-3 text-muted">
+                        2019-02-25 03:11:03
+                    </div>
+                    <div class="col-9">
+                        Order received.
+                    </div>
+                </div>
+
+                <div class="row px-3 py-2">
+                    <div class="col-3 text-muted">
+                        2019-02-25 03:11:03
+                    </div>
+                    <div class="col-9">
+                        Payment cleared, order scheduled for execution.
+                    </div>
+                </div>
+
+                <div class="row px-3 py-2">
+                    <div class="col-3 text-muted">
+                        2019-02-25 03:11:03
+                    </div>
+                    <div class="col-9">
+                        Spinning up nodes...
+                    </div>
+                </div>
+
+                <div class="row px-3 py-2">
+                    <div class="col-3 text-muted">
+                        2019-02-25 03:11:03
+                    </div>
+                    <div class="col-9">
+                        71 nodes ready.
+                    </div>
+                </div>
+
+                <div class="row px-3 py-2">
+                    <div class="col-3 text-muted">
+                        2019-02-25 03:11:03
+                    </div>
+                    <div class="col-9">
+                        DDoS attack started.
+                    </div>
+                </div>
+
+                <div id="example1"></div>
+
+                <div class="row px-3 py-2">
+                    <div class="col-3 text-muted">
+                        2019-02-25 03:11:03
+                    </div>
+                    <div class="col-9">
+                        DDoS attack complete.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .axis {
+          font: 10px sans-serif;
+        }
+
+        .axis text {
+          -webkit-transition: fill-opacity 250ms linear;
+        }
+
+        .axis path {
+          display: none;
+        }
+
+        .axis line {
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
+
+        .horizon {
+          border-bottom: solid 1px #000;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .horizon {
+          border-top: solid 1px #000;
+          border-bottom: solid 1px #000;
+        }
+
+        .horizon + .horizon {
+          border-top: none;
+        }
+
+        .horizon canvas {
+          display: block;
+        }
+
+        .horizon .title,
+        .horizon .value {
+          bottom: 0;
+          line-height: 30px;
+          margin: 0 6px;
+          position: absolute;
+          text-shadow: 0 1px 0 rgba(255,255,255,.5);
+          white-space: nowrap;
+        }
+
+        .horizon .title {
+          left: 0;
+        }
+
+        .horizon .value {
+          right: 0;
+        }
+
+        .line {
+          background: #000;
+          opacity: .2;
+          z-index: 2;
+
+          /* Below is a helpless hack to align rule with the mouse pointer in presence of paddings */
+          transform: translateX(1.25rem);
+        }
+
+        #example1 { min-height: 155px; }
+        #example2a { min-height: 153px; }
+        #example2b { min-height: 255px; }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cubism/1.6.0/cubism.v1.min.js"></script>
+    <script>
+        const random = name => {
+            let value = 0, values = [], i = 0, last;
+
+            const invPeriod = Math.random() / 11 + 0.101;
+
+            return context.metric((start, stop, step, callback) => {
+                start = +start, stop = +stop;
+
+                if(isNaN(last)) {
+                    last = start;
+                }
+
+                while(last < stop) {
+                  last += step;
+                  
+                  // value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
+                  value = value + .81 * Math.random() - .405 + .20091 * Math.cos(i += invPeriod);
+                  value = Math.max(0, Math.min(10, value));
+
+                  values.push(Math.round(value * 10));
+                }
+
+                callback(null, values = values.slice((start - stop) / step));
+            }, name);
+        };
+    </script>
+    <script>
+        var context = cubism.context()
+            .serverDelay(0)
+            .clientDelay(0)
+            .step(1e3)
+            .size(960)
+            // .stop();
+
+        const x = random("NA#0"),
+              y = random("NA#1"),
+              z = random("NA#2"),
+              a = random("EU#0"),
+              b = random("EU#1"),
+              c = random("EU#2"),
+              d = random("EU#3"),
+              u = random("A#0");
+
+        d3.select("#example1").call(div => {
+          div.append("div")
+              .attr("class", "axis")
+              .call(context.axis().orient("top"));
+
+          div.selectAll(".horizon0")
+              .data([x.add(y).add(z).add(a).add(b).add(c).add(d).add(u)])
+            .enter().append("div")
+              .attr("class", "horizon")
+              .call(context.horizon().height(160).title("Total request rate, Rx/s").extent([0, 1600]));
+
+          div.selectAll(".horizon1")
+              .data([x, y, z, a, b, c, d, u])
+            .enter().append("div")
+              .attr("class", "horizon")
+              .call(context.horizon().extent([0, 200]));
+
+          div.append("div")
+              .attr("class", "rule")
+              .call(context.rule());
+        });
+
+        // On mousemove, reposition the chart values to match the rule.
+        context.on("focus", function(i) {
+          d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
+        });
+    </script>
+</body>
+</html>
