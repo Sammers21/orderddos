@@ -88,9 +88,37 @@ class OrderForm extends React.Component {
 
             this.setState({ status: 'SENDING' });
 
-            setTimeout(() => {
-                this.setState({ status: 'SUCCESS' });
-            }, 500);
+            fetch("/submit-order", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify({
+                    email: this.state.email,
+                    targetUrl: this.state.targetUrl,
+                    numNa: this.state.numNa,
+                    numEu: this.state.numEu,
+                    numA: this.state.numA,
+                    duration: this.state.duration,
+                    startTime: this.state.startTime
+                })
+            }).then(response => {
+                // if(response.status !== 201) { ... }
+
+                return response.json();
+            }).then(data => {
+                if(data.status === 'OK') {
+                    this.setState({ status: 'SUCCESS' }, () => {
+                        setTimeout(() => {
+                            location.href = data.location;
+                        }, 500);
+                    });
+                }
+
+                // TODO: return and process errors
+            }).catch(err => {
+                console.error("ERROR", err);
+            });
         }
 
         e.preventDefault();
