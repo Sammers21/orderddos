@@ -224,7 +224,7 @@ class OrderForm extends React.Component {
 
                         <div className="text-center">
                             <button type="submit" className="btn btn-lg btn-primary px-5"
-                                    disabled={!this.isInputNonzero()}>
+                                    disabled={!this.isInputNonzero() || (this.state.hadSubmitAttempt && !this.isValid())}>
                                 Submit
                             </button>
                         </div>
