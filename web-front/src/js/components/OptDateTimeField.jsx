@@ -30,6 +30,13 @@ const dateToISO = date => {
         + ':' + zeroPad(d.getMinutes(), 2);
 };
 
+const maxStartDate = () => {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 1);
+
+    return d;
+}
+
 class OptDateTimeField extends React.Component {
     constructor(props) {
         super(props);
@@ -37,7 +44,9 @@ class OptDateTimeField extends React.Component {
         this.state = {
             enabled: false,
             value: dateToISO(getNextHour())
-        }
+        };
+
+        // TODO: highlight invalid, non-called-back value
     }
 
     dateValue() {
@@ -51,7 +60,11 @@ class OptDateTimeField extends React.Component {
     }
 
     handleDateTimeChange(newValue) {
-        this.setState({ value: newValue });
+        this.setState({ value: newValue }, () => {
+            if(new Date() <= this.dateValue() && this.dateValue() < maxStartDate()) {
+                this.props.onInput(this.dateValue());
+            }
+        });
     }
 
     handleFocus() {
@@ -61,12 +74,21 @@ class OptDateTimeField extends React.Component {
     }
 
     handleBlur() {
-        if(new Date() <= this.dateValue()) {
+        let subValue = null;
+
+        if(this.dateValue() < new Date()) {
+            subValue = getNextHour();
+        }
+        else if(maxStartDate() < this.dateValue()) {
+            subValue = maxStartDate();
+        }
+
+        if(subValue === null) {
             this.props.onInput(this.dateValue());
         }
         else {
-            this.setState({ value: dateToISO(getNextHour()) }, () => {
-                this.props.onInput(this.dateValue());
+            this.setState({ value: dateToISO(subValue) }, () => {
+                this.props.onInput(subValue);
             });
         }
     }
@@ -82,8 +104,11 @@ class OptDateTimeField extends React.Component {
                 </div>
                 <input className="form-control" type="datetime-local" id={this.props.name} name={this.props.name}
                        disabled={!this.state.enabled}
-                       value={this.state.value} onChange={e => this.handleDateTimeChange(e.target.value)}
-                       onFocus={() => this.handleFocus()} onBlur={() => this.handleBlur()} />
+                       value={this.state.value}
+                       min={dateToISO(new Date())} max={dateToISO(maxStartDate())}
+                       onChange={e => this.handleDateTimeChange(e.target.value)}
+                       onFocus={() => this.handleFocus()}
+                       onBlur={() => this.handleBlur()} />
             </div>
         );
     }
