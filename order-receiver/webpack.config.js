@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
     entry: './src/js/order.jsx',
-    mode: 'development',
-    // mode: 'production',
+    // mode: 'development',
+    mode: 'production',
     watch: false,
     // stats: 'verbose',
     output: {
