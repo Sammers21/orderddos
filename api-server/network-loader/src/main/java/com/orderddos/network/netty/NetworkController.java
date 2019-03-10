@@ -10,6 +10,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.*;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,13 +25,19 @@ public class NetworkController {
     private final URI url;
     private final ChannelsInfo channelsInfo;
     private final StatisticsRecorder statisticsRecorder;
+    private final Vertx vertx;
 
-    public NetworkController(Bootstrap bootstrap, URI url, ChannelsInfo channelsInfo, StatisticsRecorder statisticsRecorder) {
+    public NetworkController(Vertx vertx, Bootstrap bootstrap, URI url, ChannelsInfo channelsInfo, StatisticsRecorder statisticsRecorder) {
         this.bootstrap = bootstrap;
+        this.vertx = vertx;
         this.url = url;
         this.statisticsRecorder = statisticsRecorder;
         this.channelsInfo = channelsInfo;
         channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    }
+
+    public long aliveConnections() {
+        return channels.size();
     }
 
     public void processDecision(Decision decision) {
@@ -77,10 +84,18 @@ public class NetworkController {
 
     private void sendForChannel(Channel channel) {
         if (channels.contains(channel)) {
-            statisticsRecorder.recordRequestSent();
-            channelsInfo.putRequestSentTimeForChannel(channel.id());
             channel.writeAndFlush(httpRequest()).addListener(future -> {
-                sendForChannel(channel);
+                if (future.isSuccess()) {
+                    statisticsRecorder.recordRequestSent();
+                    channelsInfo.putRequestSentTimeForChannel(channel.id());
+                    if (channelsInfo.inflightRequestsForChannel(channel.id()) < 10) {
+                        sendForChannel(channel);
+                    } else {
+                        vertx.setTimer(100, event -> sendForChannel(channel));
+                    }
+                } else {
+                    log.error("Future failed");
+                }
             });
         } else {
             log.info("Channel '{}' is removed, not sending for the channel", channel.id().asShortText());

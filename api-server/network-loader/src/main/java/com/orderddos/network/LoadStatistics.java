@@ -10,13 +10,27 @@ public class LoadStatistics {
     private final double averageRequestTime;
     private final long bytesWritten;
     private final long bytesRead;
+    private final long connectionsCount;
 
-    public LoadStatistics(long requestsSent, long responsesReceived, double averageRequestTime, long bytesWritten, long bytesRead) {
+    public LoadStatistics(long requestsSent, long responsesReceived, double averageRequestTime, long bytesWritten, long bytesRead, long connectionsCount) {
         this.requestsSent = requestsSent;
         this.requestsReceived = responsesReceived;
         this.averageRequestTime = averageRequestTime;
         this.bytesWritten = bytesWritten;
         this.bytesRead = bytesRead;
+        this.connectionsCount = connectionsCount;
+    }
+
+    public long getBytesWritten() {
+        return bytesWritten;
+    }
+
+    public long getBytesRead() {
+        return bytesRead;
+    }
+
+    public long getConnectionsCount() {
+        return connectionsCount;
     }
 
     public long getRequestsSent() {
@@ -41,6 +55,7 @@ public class LoadStatistics {
                 ", averageRequestTime=" + averageRequestTime +
                 ", bytesWritten=" + written +
                 ", bytesRead=" + read +
+                ", connectionsCount=" + connectionsCount +
                 '}';
     }
 

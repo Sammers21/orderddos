@@ -41,4 +41,13 @@ public class ChannelsInfo {
             }
         });
     }
+
+    public long inflightRequestsForChannel(ChannelId channelId) {
+        Queue<Long> longs = timings.get(channelId.asLongText());
+        if (longs == null || longs.size() == 0) {
+            return 0;
+        } else {
+            return longs.size();
+        }
+    }
 }

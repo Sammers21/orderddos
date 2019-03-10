@@ -42,7 +42,7 @@ public class StatisticsRecorderImpl implements StatisticsRecorder {
     }
 
     @Override
-    public synchronized void takeSnapshot() {
+    public synchronized void takeSnapshot(long connectionsCount) {
         double avgRequestTime;
         if (responsesReceived.get() != 0) {
             avgRequestTime = sumRequestTime.get() / responsesReceived.get();
@@ -54,8 +54,8 @@ public class StatisticsRecorderImpl implements StatisticsRecorder {
                 responsesReceived.get(),
                 avgRequestTime,
                 counter.cumulativeWrittenBytes(),
-                counter.cumulativeReadBytes()
-        );
+                counter.cumulativeReadBytes(),
+                connectionsCount);
         log.info("Statistics snapshot: {}", loadStatistics.toString());
         last10SecondsStat.add(loadStatistics);
         resetCounters();

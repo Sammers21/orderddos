@@ -4,7 +4,6 @@ import com.orderddos.network.StatisticsRecorder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 import org.slf4j.Logger;
@@ -24,9 +23,7 @@ public class HttpGetNettyResponseHandler extends SimpleChannelInboundHandler<Htt
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
-        if (msg instanceof HttpContent) {
-            // ignore content
-        } else if (msg instanceof HttpResponse) {
+        if (msg instanceof HttpResponse) {
             HttpResponse httpResponse = (HttpResponse) msg;
             ChannelId id = ctx.channel().id();
             long start = channelsInfo.pollRequestSentTimeForChannel(id);

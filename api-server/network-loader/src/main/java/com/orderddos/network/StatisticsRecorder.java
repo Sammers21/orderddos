@@ -28,5 +28,5 @@ public interface StatisticsRecorder {
     /**
      * Force to make a statistics snapshot.
      */
-    void takeSnapshot();
+    void takeSnapshot(long connectionsCount);
 }

@@ -13,6 +13,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContentDecompressor;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -48,7 +49,7 @@ public class HttpGetNettyNetworkLoader implements NetworkLoader {
         }
         Bootstrap b = new Bootstrap();
         ChannelsInfo channelsInfo = new ChannelsInfo();
-        GlobalTrafficShapingHandler shapingHandler = new GlobalTrafficShapingHandler(GlobalEventExecutor.INSTANCE, 0,0,0);
+        GlobalTrafficShapingHandler shapingHandler = new GlobalTrafficShapingHandler(GlobalEventExecutor.INSTANCE, 0, 0, 0);
         TrafficCounter trafficCounter = shapingHandler.trafficCounter();
         StatisticsRecorder statisticsRecorder = new StatisticsRecorderImpl(trafficCounter);
         b.group(eventExecutors)
@@ -64,13 +65,14 @@ public class HttpGetNettyNetworkLoader implements NetworkLoader {
                         pipeline.addLast(shapingHandler);
                         pipeline.addLast(new HttpClientCodec());
                         pipeline.addLast(new HttpContentDecompressor());
+                        pipeline.addLast(new HttpObjectAggregator(1048576));
                         pipeline.addLast(new HttpGetNettyResponseHandler(channelsInfo, statisticsRecorder));
                     }
                 });
         trafficCounter.start();
-        NetworkController networkController = new NetworkController(b, url, channelsInfo, statisticsRecorder);
+        NetworkController networkController = new NetworkController(vertx, b, url, channelsInfo, statisticsRecorder);
         vertx.setPeriodic(1000, event -> {
-            statisticsRecorder.takeSnapshot();
+            statisticsRecorder.takeSnapshot(networkController.aliveConnections());
             Decision decision = decisionEngine.makeDecision(statisticsRecorder.lastStatistics());
             networkController.processDecision(decision);
         });
