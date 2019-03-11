@@ -32,6 +32,12 @@ Digital Ocean говорит что узел можнт выдавать до 1 
 
 Работа модуля network-loader: 
 
+### № 1 от 10 марта 2019
+
 ![image](https://user-images.githubusercontent.com/16746106/54093545-edd1e280-43a9-11e9-806d-65efec610110.png)
+
+### № 2 от 11 марта 2019
+
+![image](https://user-images.githubusercontent.com/16746106/54155144-9177cd00-4454-11e9-993f-ef9de2c42e89.png)
 
 По графикам видно, что тот способен выдавать достаточную нагрузку
