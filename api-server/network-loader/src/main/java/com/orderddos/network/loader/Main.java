@@ -33,7 +33,7 @@ public class Main {
             durationString = "10s";
         }
 
-        Integer secondsDuration;
+        int secondsDuration = 0;
         if (durationString.endsWith("s")) {
             secondsDuration = Integer.parseInt(durationString.substring(0, durationString.length() - 1));
         } else if (durationString.endsWith("m")) {
@@ -50,5 +50,7 @@ public class Main {
                     }
                 }
         );
+        Thread.sleep(secondsDuration * 1000);
+        System.exit(0);
     }
 }

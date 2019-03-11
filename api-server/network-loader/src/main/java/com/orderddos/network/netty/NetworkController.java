@@ -88,10 +88,10 @@ public class NetworkController {
                 if (future.isSuccess()) {
                     statisticsRecorder.recordRequestSent();
                     channelsInfo.putRequestSentTimeForChannel(channel.id());
-                    if (channelsInfo.inflightRequestsForChannel(channel.id()) < 10) {
+                    if (channelsInfo.inflightRequestsForChannel(channel.id()) < 2) {
                         sendForChannel(channel);
                     } else {
-                        vertx.setTimer(100, event -> sendForChannel(channel));
+                        vertx.setTimer(50, event -> sendForChannel(channel));
                     }
                 } else {
                     log.error("Future failed");
