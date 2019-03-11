@@ -1,0 +1,19 @@
+plugins {
+    id 'application'
+}
+
+mainClassName = 'com.orderddos.network.loader.Main'
+
+dependencies {
+    compile project(":network-loader")
+    // https://mvnrepository.com/artifact/commons-cli/commons-cli
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+}
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    archiveBaseName = "loader-cli"
+}

@@ -1,21 +1,4 @@
-plugins {
-    id 'application'
-}
-
-mainClassName = 'com.orderddos.network.loader.Main'
-
 dependencies {
     // https://mvnrepository.com/artifact/io.netty/netty-all
     compile group: 'io.netty', name: 'netty-all', version: '4.1.34.Final'
-
-    // https://mvnrepository.com/artifact/commons-cli/commons-cli
-    compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
-}
-
-jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    manifest {
-        attributes 'Main-Class': mainClassName
-    }
-    archiveBaseName = "network-loader"
 }
