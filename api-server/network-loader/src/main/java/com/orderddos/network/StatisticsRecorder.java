@@ -1,6 +1,6 @@
 package com.orderddos.network;
 
-import java.util.Queue;
+import java.util.Deque;
 
 /**
  * Implementation record statics and report results via {@link #lastStatistics()}
@@ -23,7 +23,7 @@ public interface StatisticsRecorder {
     /**
      * @return request/response statistics for a few last seconds
      */
-    Queue<LoadStatistics> lastStatistics();
+    Deque<LoadStatistics> lastStatistics();
 
     /**
      * Force to make a statistics snapshot.

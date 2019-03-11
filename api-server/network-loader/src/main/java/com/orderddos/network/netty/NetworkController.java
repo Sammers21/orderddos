@@ -83,22 +83,22 @@ public class NetworkController {
     }
 
     private void sendForChannel(Channel channel) {
-        if (channels.contains(channel)) {
-            channel.writeAndFlush(httpRequest()).addListener(future -> {
-                if (future.isSuccess()) {
-                    statisticsRecorder.recordRequestSent();
-                    channelsInfo.putRequestSentTimeForChannel(channel.id());
-                    if (channelsInfo.inflightRequestsForChannel(channel.id()) < 2) {
+        if (channelsInfo.inflightRequestsForChannel(channel.id()) < 2) {
+            if (channels.contains(channel)) {
+                channel.writeAndFlush(httpRequest()).addListener(future -> {
+                    if (future.isSuccess()) {
+                        statisticsRecorder.recordRequestSent();
+                        channelsInfo.putRequestSentTimeForChannel(channel.id());
                         sendForChannel(channel);
                     } else {
-                        vertx.setTimer(50, event -> sendForChannel(channel));
+                        log.error("Future failed");
                     }
-                } else {
-                    log.error("Future failed");
-                }
-            });
+                });
+            } else {
+                log.info("Channel '{}' is removed, not sending for the channel", channel.id().asShortText());
+            }
         } else {
-            log.info("Channel '{}' is removed, not sending for the channel", channel.id().asShortText());
+            vertx.setTimer(50, event -> sendForChannel(channel));
         }
     }
 }

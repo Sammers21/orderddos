@@ -1,13 +1,19 @@
 package com.orderddos.network.loader;
 
+import com.orderddos.network.LoadStatistics;
 import com.orderddos.network.decisions.ChangeAmountOfConnections;
 import com.orderddos.network.netty.HttpGetNettyNetworkLoader;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
+
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) throws Exception {
         // create Options object
         Options options = new Options();
@@ -43,8 +49,10 @@ public class Main {
         httpGetNettyNetworkLoader.loadAddress(lastArg,
                 loadStatistics ->
                 {
-                    if (loadStatistics.size() == 1) {
-                        return new ChangeAmountOfConnections(connections);
+                    LoadStatistics poll = loadStatistics.pollLast();
+                    int difference = Math.toIntExact(connections - poll.getConnectionsCount());
+                    if (difference >= 1) {
+                        return new ChangeAmountOfConnections(difference);
                     } else {
                         return new ChangeAmountOfConnections(0);
                     }

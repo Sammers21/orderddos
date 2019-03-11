@@ -6,15 +6,15 @@ import io.netty.handler.traffic.TrafficCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class StatisticsRecorderImpl implements StatisticsRecorder {
 
     private static final Logger log = LoggerFactory.getLogger(StatisticsRecorderImpl.class);
 
-    private final Queue<LoadStatistics> last10SecondsStat = new LinkedList<>();
+    private final Deque<LoadStatistics> last10SecondsStat = new LinkedList<>();
 
     private final AtomicLong requestsSent = new AtomicLong(0);
     private final AtomicLong responsesReceived = new AtomicLong(0);
@@ -37,7 +37,7 @@ public class StatisticsRecorderImpl implements StatisticsRecorder {
     }
 
     @Override
-    public synchronized Queue<LoadStatistics> lastStatistics() {
+    public synchronized Deque<LoadStatistics> lastStatistics() {
         return new LinkedList<>(last10SecondsStat);
     }
 

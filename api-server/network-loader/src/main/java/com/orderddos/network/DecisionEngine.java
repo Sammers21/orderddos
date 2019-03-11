@@ -2,9 +2,9 @@ package com.orderddos.network;
 
 import com.orderddos.network.decisions.Decision;
 
-import java.util.Queue;
+import java.util.Deque;
 
 public interface DecisionEngine {
 
-    Decision makeDecision(Queue<LoadStatistics> loadStatistics);
+    Decision makeDecision(Deque<LoadStatistics> loadStatistics);
 }
