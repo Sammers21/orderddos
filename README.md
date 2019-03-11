@@ -27,3 +27,11 @@ Transfer/sec:    135.69MB
 ```
 
 Digital Ocean говорит что узел можнт выдавать до 1 Gbit/s, что и наблюдается. 
+
+## network-loader 
+
+Работа модуля network-loader: 
+
+![image](https://user-images.githubusercontent.com/16746106/54093545-edd1e280-43a9-11e9-806d-65efec610110.png)
+
+По графикам видно, что тот способен выдавать достаточную нагрузку
