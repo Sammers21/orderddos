@@ -14,13 +14,13 @@ subprojects {
 
     dependencies {
         // Vert.x deps
-        implementation("io.vertx:vertx-core:$vertx_version") {
+        compile("io.vertx:vertx-core:$vertx_version") {
             transitive = false
         }
-        implementation("io.vertx:vertx-web:$vertx_version") {
+        compile("io.vertx:vertx-web:$vertx_version") {
             transitive = false
         }
-        implementation("io.vertx:vertx-web-client:$vertx_version") {
+        compile("io.vertx:vertx-web-client:$vertx_version") {
             transitive = false
         }
 
