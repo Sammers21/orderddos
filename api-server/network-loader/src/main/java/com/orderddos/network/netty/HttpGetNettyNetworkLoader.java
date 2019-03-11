@@ -20,6 +20,7 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.handler.traffic.TrafficCounter;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class HttpGetNettyNetworkLoader implements NetworkLoader {
     private static final Logger log = getLogger(HttpGetNettyNetworkLoader.class);
 
     @Override
-    public void loadAddress(String address, DecisionEngine decisionEngine) throws Exception {
+    public void loadAddress(String address, DecisionEngine decisionEngine, Handler<Void> requestSucceed, Handler<Void> requestFailed, Handler<Long> elapsedHandler) throws Exception {
         URI url = new URI(address);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         EventLoopGroup eventExecutors = new NioEventLoopGroup(availableProcessors * 2);
@@ -66,7 +67,7 @@ public class HttpGetNettyNetworkLoader implements NetworkLoader {
                         pipeline.addLast(new HttpClientCodec());
                         pipeline.addLast(new HttpContentDecompressor());
                         pipeline.addLast(new HttpObjectAggregator(1048576));
-                        pipeline.addLast(new HttpGetNettyResponseHandler(channelsInfo, statisticsRecorder));
+                        pipeline.addLast(new HttpGetNettyResponseHandler(channelsInfo, statisticsRecorder, requestSucceed, requestFailed, elapsedHandler));
                     }
                 });
         trafficCounter.start();

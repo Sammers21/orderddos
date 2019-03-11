@@ -3,7 +3,7 @@ plugins {
 }
 
 version = '0.0.2'
-mainClassName = 'com.orderddos.agent.OrderDDoSVirus'
+mainClassName = 'com.orderddos.agent.OrderDDoSAgent'
 
 dependencies {
     compile project(":network-loader")

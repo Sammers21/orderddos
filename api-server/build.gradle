@@ -13,6 +13,9 @@ subprojects {
     }
 
     dependencies {
+        // https://mvnrepository.com/artifact/org.javatuples/javatuples
+        compile group: 'org.javatuples', name: 'javatuples', version: '1.2'
+
         // Vert.x deps
         compile("io.vertx:vertx-core:$vertx_version") {
             transitive = false
