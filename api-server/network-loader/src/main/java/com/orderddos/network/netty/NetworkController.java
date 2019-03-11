@@ -53,7 +53,7 @@ public class NetworkController {
 
     private void changeConnections(ChangeAmountOfConnections changeAmountOfConnections) {
         int change = changeAmountOfConnections.getChange();
-        if (change > 0) {
+        if (change >= 0) {
             for (int i = 0; i < change; i++) {
                 int port;
                 if (url.getScheme().equals("https")) {
@@ -70,6 +70,12 @@ public class NetworkController {
                     sendForChannel(channel);
                 });
             }
+        } else {
+            channels.stream().limit(change * -1).forEach(channel ->
+            {
+                channelsInfo.removeChannel(channel.id());
+                channel.close();
+            });
         }
     }
 
@@ -95,7 +101,7 @@ public class NetworkController {
                     }
                 });
             } else {
-                log.info("Channel '{}' is removed, not sending for the channel", channel.id().asShortText());
+                log.debug("Channel '{}' is removed, not sending for the channel", channel.id().asShortText());
             }
         } else {
             vertx.setTimer(50, event -> sendForChannel(channel));

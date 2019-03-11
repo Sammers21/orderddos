@@ -42,6 +42,10 @@ public class ChannelsInfo {
         });
     }
 
+    public void removeChannel(ChannelId channelId) {
+        timings.remove(channelId);
+    }
+
     public long inflightRequestsForChannel(ChannelId channelId) {
         Queue<Long> longs = timings.get(channelId.asLongText());
         if (longs == null || longs.size() == 0) {

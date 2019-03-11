@@ -51,11 +51,7 @@ public class Main {
                 {
                     LoadStatistics poll = loadStatistics.pollLast();
                     int difference = Math.toIntExact(connections - poll.getConnectionsCount());
-                    if (difference >= 1) {
-                        return new ChangeAmountOfConnections(difference);
-                    } else {
-                        return new ChangeAmountOfConnections(0);
-                    }
+                    return new ChangeAmountOfConnections(difference);
                 }
         );
         Thread.sleep(secondsDuration * 1000);
