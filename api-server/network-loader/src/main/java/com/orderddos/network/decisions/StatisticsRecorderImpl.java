@@ -66,5 +66,9 @@ public class StatisticsRecorderImpl implements StatisticsRecorder {
         responsesReceived.set(0);
         requestsSent.set(0);
         sumRequestTime.set(0);
+
+        while (last10SecondsStat.size() > 10) {
+            last10SecondsStat.pollFirst();
+        }
     }
 }
