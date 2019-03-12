@@ -22,7 +22,7 @@ public class NetworkLoaderDecisionEngine implements DecisionEngine {
 
     private static final int MIN_AMOUNT_OF_CONNECTIONS = 100;
     private static final int RANDOM_MAX_CONNECTION_BOOST = 25;
-    private static final int MAX_CONNECTION_DOWN = -50;
+    private static final int MAX_CONNECTION_DOWN = -10;
     private static final int CONNECTION_BOOST_BASELINE = 25;
 
     private final Meter bytesReadPerSecond;
