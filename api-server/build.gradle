@@ -38,5 +38,7 @@ subprojects {
         options.fork = true  // Fork your compilation into a child process
         options.forkOptions.setMemoryMaximumSize("128m") // Set maximum memory to 4g
     }
+
+    version = '0.0.4'
 }
 
