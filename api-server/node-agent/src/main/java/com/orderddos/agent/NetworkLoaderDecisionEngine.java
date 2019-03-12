@@ -12,12 +12,14 @@ import org.slf4j.LoggerFactory;
 import java.util.Deque;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class NetworkLoaderDecisionEngine implements DecisionEngine {
 
     private static final Logger log = LoggerFactory.getLogger(NetworkLoaderDecisionEngine.class);
     private static final Long GBIT = 134217728L; // 2^27
+    private static final int START_AMOUNT_OF_CONNECTIONS = 100;
 
     private final Meter bytesReadPerSecond;
     private final Meter bytesWrittenPerSecond;
@@ -25,6 +27,9 @@ public class NetworkLoaderDecisionEngine implements DecisionEngine {
 
     // Pair of connections and traffic
     private final AtomicReference<Pair<Long, Long>> bestResult = new AtomicReference<>(null);
+
+    // Amount of connections to keep
+    private final AtomicLong desiredAmountOfConnections = new AtomicLong(START_AMOUNT_OF_CONNECTIONS);
 
     private final Random random = new Random();
 
