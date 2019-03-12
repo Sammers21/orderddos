@@ -19,7 +19,11 @@ public class NetworkLoaderDecisionEngine implements DecisionEngine {
 
     private static final Logger log = LoggerFactory.getLogger(NetworkLoaderDecisionEngine.class);
     private static final Long GBIT = 134217728L; // 2^27
-    private static final int START_AMOUNT_OF_CONNECTIONS = 100;
+
+    private static final int MIN_AMOUNT_OF_CONNECTIONS = 100;
+    private static final int RANDOM_MAX_CONNECTION_BOOST = 25;
+    private static final int MAX_CONNECTION_DOWN = -50;
+    private static final int CONNECTION_BOOST_BASELINE = 25;
 
     private final Meter bytesReadPerSecond;
     private final Meter bytesWrittenPerSecond;
@@ -29,7 +33,7 @@ public class NetworkLoaderDecisionEngine implements DecisionEngine {
     private final AtomicReference<Pair<Long, Long>> bestResult = new AtomicReference<>(null);
 
     // Amount of connections to keep
-    private final AtomicLong desiredAmountOfConnections = new AtomicLong(START_AMOUNT_OF_CONNECTIONS);
+    private final AtomicLong desiredAmountOfConnections = new AtomicLong(MIN_AMOUNT_OF_CONNECTIONS);
 
     private final Random random = new Random();
 
@@ -42,37 +46,35 @@ public class NetworkLoaderDecisionEngine implements DecisionEngine {
     @Override
     public Decision makeDecision(Deque<LoadStatistics> loadStatistics) {
         LoadStatistics lastStat = loadStatistics.pollLast();
+        LoadStatistics preLastStat = loadStatistics.pollLast();
         Objects.requireNonNull(lastStat);
         bytesReadPerSecond.mark(lastStat.getBytesRead());
-        updateBestResult(lastStat, bestResult);
         bytesWrittenPerSecond.mark(lastStat.getBytesWritten());
         long trafficValue = lastStat.getBytesRead() + lastStat.getBytesWritten();
         traffic.mark(trafficValue);
-        Decision result;
+        double trafficUtilization = (double) trafficValue / GBIT * 100;
+        log.info("1 Gbit/s traffic utilization: '{}%'", String.format("%.2f", trafficUtilization));
+        Decision result = null;
+        int diffBetweenActualAndDesired = Math.toIntExact(desiredAmountOfConnections.get() - lastStat.getConnectionsCount());
         if (trafficValue > (GBIT * 0.75)) {
-            result = new ChangeAmountOfConnections(0);
-        } else {
-            if (lastStat.getConnectionsCount() == 0) {
-                // start with 100 connections
-                result = new ChangeAmountOfConnections(100);
-            } else if (trafficValue < bestResult.get().getValue1()) {
-                if (Math.random() < 0.5 && lastStat.getConnectionsCount() >= 100) {
-                    result = new ChangeAmountOfConnections(-50);
-                } else {
-                    result = new ChangeAmountOfConnections(25 + random.nextInt(25));
-                }
+            result = new ChangeAmountOfConnections(diffBetweenActualAndDesired);
+        } else if (preLastStat != null) {
+            if (Math.random() < 0.5 && lastStat.getConnectionsCount() >= MIN_AMOUNT_OF_CONNECTIONS) {
+                result = new ChangeAmountOfConnections(diffBetweenActualAndDesired + MAX_CONNECTION_DOWN);
             } else {
-                // we've got new result
-                result = new ChangeAmountOfConnections(0);
+                result = new ChangeAmountOfConnections(diffBetweenActualAndDesired + CONNECTION_BOOST_BASELINE + random.nextInt(RANDOM_MAX_CONNECTION_BOOST));
             }
+        } else {
+            result = new ChangeAmountOfConnections(diffBetweenActualAndDesired);
         }
-        updateBestResult(lastStat, bestResult);
+
+        updateBestResult(lastStat, lastStat, bestResult);
         return result;
     }
 
-    private void updateBestResult(LoadStatistics lastStat, AtomicReference<Pair<Long, Long>> bestResult) {
-        long trafficValue = lastStat.getBytesRead() + lastStat.getBytesWritten();
-        long connectionsCount = lastStat.getConnectionsCount();
+    private void updateBestResult(LoadStatistics statForTraffic, LoadStatistics statForConnections, AtomicReference<Pair<Long, Long>> bestResult) {
+        long trafficValue = statForTraffic.getBytesRead() + statForTraffic.getBytesWritten();
+        long connectionsCount = statForConnections.getConnectionsCount();
         if (bestResult.get() == null || bestResult.get().getValue1() < trafficValue) {
             bestResult.set(new Pair<>(connectionsCount, trafficValue));
             log.info("New best traffic value: '{}'. Connections: '{}'", LoadStatistics.humanReadableByteCount(trafficValue, true), connectionsCount);
