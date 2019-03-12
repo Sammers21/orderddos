@@ -29,7 +29,7 @@ public class OrderDDoSAgent {
             uri = args[1];
         } else {
             uuid = UUID.fromString("b7f9fef8-3e7b-41fd-9f2a-0f5fe5ffe4b1");
-            uri = "https://www.goha.ru/";
+            uri = "https://order-ddos.com/";
         }
         log.info(String.format("UUID: %s URI: %s", uuid.toString(), uri));
         MetricRegistry metricRegistry = new MetricRegistry();
