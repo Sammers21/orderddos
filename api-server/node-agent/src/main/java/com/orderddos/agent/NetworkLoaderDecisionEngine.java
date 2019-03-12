@@ -68,16 +68,20 @@ public class NetworkLoaderDecisionEngine implements DecisionEngine {
             result = new ChangeAmountOfConnections(diffBetweenActualAndDesired);
         }
 
-        updateBestResult(lastStat, lastStat, bestResult);
+        long bestConnections;
+        if (preLastStat == null) {
+            bestConnections = lastStat.getConnectionsCount();
+        } else {
+            bestConnections = Math.max(lastStat.getConnectionsCount(), preLastStat.getConnectionsCount());
+        }
+        updateBestResult(lastStat.getTraffic(), bestConnections, bestResult);
         return result;
     }
 
-    private void updateBestResult(LoadStatistics statForTraffic, LoadStatistics statForConnections, AtomicReference<Pair<Long, Long>> bestResult) {
-        long trafficValue = statForTraffic.getBytesRead() + statForTraffic.getBytesWritten();
-        long connectionsCount = statForConnections.getConnectionsCount();
-        if (bestResult.get() == null || bestResult.get().getValue1() < trafficValue) {
-            bestResult.set(new Pair<>(connectionsCount, trafficValue));
-            log.info("New best traffic value: '{}'. Connections: '{}'", LoadStatistics.humanReadableByteCount(trafficValue, true), connectionsCount);
+    private void updateBestResult(long traffic, long connections, AtomicReference<Pair<Long, Long>> bestResult) {
+        if (bestResult.get() == null || bestResult.get().getValue1() < traffic) {
+            bestResult.set(new Pair<>(connections, traffic));
+            log.info("New best traffic value: '{}'. Connections: '{}'", LoadStatistics.humanReadableByteCount(traffic, true), connections);
         }
     }
 }

@@ -33,6 +33,10 @@ public class LoadStatistics {
         return connectionsCount;
     }
 
+    public long getTraffic() {
+        return getBytesRead() + getBytesWritten();
+    }
+
     public long getRequestsSent() {
         return requestsSent;
     }
