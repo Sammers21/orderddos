@@ -22,8 +22,15 @@ public class OrderDDoSAgent {
     private static final Integer CARBON_PORT = 2005;
 
     public static void main(String[] args) throws Exception {
-        UUID uuid = UUID.fromString(args[0]);
-        String uri = args[1];
+        UUID uuid;
+        String uri;
+        if (args.length == 2) {
+            uuid = UUID.fromString(args[0]);
+            uri = args[1];
+        } else {
+            uuid = UUID.fromString("b7f9fef8-3e7b-41fd-9f2a-0f5fe5ffe4b1");
+            uri = "https://www.goha.ru/";
+        }
         log.info(String.format("UUID: %s URI: %s", uuid.toString(), uri));
         MetricRegistry metricRegistry = new MetricRegistry();
         initReporters(metricRegistry);
