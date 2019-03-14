@@ -43,7 +43,7 @@ public class OrderDDoSAgent {
         Meter bytesReadPerSecond = metricRegistry.meter(String.format("bytes.read.%s", uuid.toString()));
         Meter bytesWrittenPerSecond = metricRegistry.meter(String.format("bytes.written.%s", uuid.toString()));
         Meter traffic = metricRegistry.meter(String.format("bytes.traffic.%s", uuid.toString()));
-        Histogram histogram = metricRegistry.histogram("request.time");
+        Histogram histogram = metricRegistry.histogram(String.format("request.time.%s", uuid.toString()));
         HttpGetNettyNetworkLoader httpGetNettyNetworkLoader = new HttpGetNettyNetworkLoader();
         NetworkLoaderDecisionEngine decisionEngine = new NetworkLoaderDecisionEngine(
                 bytesReadPerSecond,
