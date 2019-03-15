@@ -24,13 +24,15 @@ public class DDoSDeployment {
     private final DigitalOceanClient digitalOceanClient;
     private final Vertx vertx;
     private final Order order;
+    private final Undeployer undeployer;
 
     private static final Integer DELAY_BEFORE_DEPLOYMENT_MS = (60 * 2 + 30) * 1000;
 
-    public DDoSDeployment(DigitalOceanClient digitalOceanClient, Vertx vertx, Order order) {
+    public DDoSDeployment(DigitalOceanClient digitalOceanClient, Vertx vertx, Order order, Undeployer undeployer) {
         this.digitalOceanClient = digitalOceanClient;
         this.vertx = vertx;
         this.order = order;
+        this.undeployer = undeployer;
     }
 
     public Future<Void> deploy() {
@@ -45,7 +47,7 @@ public class DDoSDeployment {
         vertx.executeBlocking(event -> {
             try {
                 Droplets createdDropltets = digitalOceanClient.createDroplets(droplets);
-                log.info("Order is deployed: " + order);
+                log.info("Order '{}' is deployed: {}", order.getUuid(), order);
                 event.complete(createdDropltets);
             } catch (Exception e) {
                 log.error("Failed to deploy order " + order, e);
@@ -57,17 +59,7 @@ public class DDoSDeployment {
 
     private void removeDropletsAfter(int duration) {
         vertx.setTimer(duration, timeToUndeploy -> {
-            Future<Delete> delete = Future.future();
-            vertx.executeBlocking(event -> {
-                try {
-                    final Delete removeDroplets = digitalOceanClient.deleteDropletByTagName(order.getUuid().toString());
-                    log.info(String.format("Droplets  with tag '%s' has been removed", order.getUuid().toString()));
-                    event.complete(removeDroplets);
-                } catch (Exception e) {
-                    log.error("Failed to delete" + order, e);
-                    event.fail(e);
-                }
-            }, delete);
+            undeployer.undeployAttackWithUUID(order.getUuid());
         });
     }
 

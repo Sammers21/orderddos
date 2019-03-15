@@ -1,6 +1,7 @@
 package com.orderddos.server;
 
 import com.myjeeva.digitalocean.impl.DigitalOceanClient;
+import com.orderddos.server.impl.UndeployerImpl;
 import io.reactiverse.pgclient.*;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -8,6 +9,7 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ public class ApiService extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         var httpServer = vertx.createHttpServer();
         this.digitalOceanClient = new DigitalOceanClient(DDoSApiService.OTABEK_API_KEY);
+        UndeployerImpl undeployer = new UndeployerImpl(vertx, digitalOceanClient);
         var router = Router.router(vertx);
 
         // Pool options
@@ -43,9 +46,8 @@ public class ApiService extends AbstractVerticle {
         // Create the client pool
         this.pgClient = PgClient.pool(vertx, options);
 
-        router.post(START_DDOS).handler(ctx -> {
-            MultiMap params = ctx.request().params();
-            UUID uuid = UUID.fromString(params.get(DDOS_UUID));
+        router.route(START_DDOS).handler(ctx -> {
+            UUID uuid = ddosAttackUuid(ctx);
 
             Future<PgRowSet> selectFuture = Future.future();
             pgClient.preparedQuery(
@@ -63,7 +65,7 @@ public class ApiService extends AbstractVerticle {
                         onlyRow.getInterval("duration"),
                         onlyRow.getString("status")
                 );
-                return new DDoSDeployment(digitalOceanClient, vertx, order).deploy();
+                return new DDoSDeployment(digitalOceanClient, vertx, order, undeployer).deploy();
             }).compose(deployed -> {
                 Future<PgRowSet> insertTStartFuture = Future.future();
                 pgClient.preparedQuery("UPDATE Orders set t_start = now() where uuid = $1", Tuple.of(uuid), insertTStartFuture);
@@ -72,14 +74,34 @@ public class ApiService extends AbstractVerticle {
                 if (deployed.succeeded()) {
                     ctx.response().end("DEPLOYED");
                 } else {
-                    ctx.response().end("ERROR" + deployed.cause().getMessage());
+                    ctx.response().setStatusCode(500).end("ERROR" + deployed.cause().getMessage());
+                    log.error("Unable to deploy", deployed.cause());
                 }
             });
         });
+
+        router.route(STOP_DDOS).handler(ctx -> {
+            UUID uuid = ddosAttackUuid(ctx);
+            undeployer.undeployAttackWithUUID(uuid).setHandler(event -> {
+                if (event.succeeded()) {
+                    ctx.response().end("UNDEPLOYED");
+                    log.info("Order with uuid '{}' has been undeployed", uuid.toString());
+                } else {
+                    ctx.response().setStatusCode(500).end("ERROR" + event.cause().getMessage());
+                    log.error("Unable to undeploy by uuid '{}'", uuid.toString(), event.cause());
+                }
+            });
+        });
+
         httpServer.requestHandler(router);
         Future<HttpServer> httpServerDeployed = Future.future();
         httpServer.listen(API_SERVICE_VERTICLE_PORT, httpServerDeployed);
         httpServerDeployed.<Void>mapEmpty().setHandler(startFuture);
+    }
+
+    private UUID ddosAttackUuid(RoutingContext ctx) {
+        MultiMap params = ctx.request().params();
+        return UUID.fromString(params.get(DDOS_UUID));
     }
 
 }
