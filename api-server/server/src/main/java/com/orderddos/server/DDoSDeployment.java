@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -38,23 +37,7 @@ public class DDoSDeployment {
         Droplet droplets = droplets();
         Future<Droplets> fd = deployDroplets(droplets);
         removeDropletsAfter(duration() + DELAY_BEFORE_DEPLOYMENT_MS);
-        deployViralNetworkAfter(DELAY_BEFORE_DEPLOYMENT_MS);
         return fd.mapEmpty();
-    }
-
-    private void deployViralNetworkAfter(Integer delayBeforeDeploymentMs) {
-        vertx.setTimer(delayBeforeDeploymentMs, event -> {
-            try {
-                final Droplets availableDropletsByTagName = digitalOceanClient.getAvailableDropletsByTagName(order.getUuid().toString(), 1, 100_000);
-                final Set<String> droplestIps = availableDropletsByTagName.getDroplets()
-                        .stream()
-                        .map(droplet -> droplet.getNetworks().getVersion4Networks().get(0).getIpAddress())
-                        .collect(Collectors.toSet());
-
-            } catch (Exception e) {
-                log.error("Unable to get info about droplets: ", e);
-            }
-        });
     }
 
     private Future<Droplets> deployDroplets(Droplet droplets) {
