@@ -269,71 +269,83 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cubism/1.6.0/cubism.v1.min.js"></script>
     <script>
-        const random = name => {
-            let value = 0, values = [], i = 0, last;
+        const drawGraphs = (orderUuid, tStart, tFinish) => {
+            /**
+             * Align the graph s.t.:
+             *   - it starts from the left side of the window
+             *   - the step is as small as possible
+             *   - graphs of finished jobs are seed from start to finish
+             */
 
-            const invPeriod = Math.random() / 11 + 0.101;
+            const tEnd = tFinish || new Date();
 
-            return context.metric((start, stop, step, callback) => {
-                start = +start, stop = +stop;
+            const nTotalMillis = tEnd - tStart;
 
-                if(isNaN(last)) {
-                    last = start;
-                }
+            let step = 10000;
 
-                while(last < stop) {
-                  last += step;
-                  
-                  // value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
-                  value = value + .81 * Math.random() - .405 + .20091 * Math.cos(i += invPeriod);
-                  value = Math.max(0, Math.min(10, value));
+            while(nTotalMillis / step > 950) {
+                step += 10000;
+            }
 
-                  values.push(Math.round(value * 10));
-                }
+            const tPlotLeeway = Math.max(0, tStart - (tEnd - step * 950));
 
-                callback(null, values = values.slice((start - stop) / step));
-            }, name);
+            console.log(tStart - tEnd + step * 950);
+
+            const delay = new Date() - tEnd + tPlotLeeway;
+            // const delay = tPlotLeeway;
+
+            console.log(delay);
+
+            var context = cubism.context()
+                .serverDelay(-delay)
+                .clientDelay(0)
+                .step(step)
+                .size(950);
+
+            if(tFinish) context = context.stop();
+
+            var graphite = context.graphite("http://104.248.203.116:8080");
+
+            var api_metrics = [
+                graphite.metric("order-ddos.com.bytes.traffic." + orderUuid + ".m1_rate").alias("Traffic in bytes"),
+                graphite.metric("order-ddos.com.requests.succeeded." + orderUuid + ".m1_rate").alias("Requests succeeded"),
+                graphite.metric("order-ddos.com.requests.failed." + orderUuid + ".m1_rate").alias("Requests failed"),
+                graphite.metric("order-ddos.com.request.time.p99").alias("P99 Request time"),
+            ];
+
+            d3.select("#example1").call(div => {
+              div.append("div")
+                  .attr("class", "axis")
+                  .call(context.axis().orient("top"));
+
+              div.selectAll(".horizon0")
+                  .data(api_metrics)
+                .enter().append("div")
+                  .attr("class", "horizon")
+                  .call(context.horizon().height(80));
+
+              div.append("div")
+                  .attr("class", "rule")
+                  .call(context.rule());
+            });
+
+            // On mousemove, reposition the chart values to match the rule.
+            context.on("focus", function(i) {
+              d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
+            });
         };
-    </script>
-    <script>
-        const orderUuid = ocation.href.split('/').pop();
 
-        var context = cubism.context()
-            .serverDelay(1500)
-            .clientDelay(1500)
-            .step(1e4)
-            .size(950)
-            // .stop();
+        // const orderUuid = ocation.href.split('/').pop();
+        const orderUuid = "9cb8c88c-27e3-11e9-aaee-86b65fa87695";
 
-        var graphite = context.graphite("http://104.248.203.116:8080");
+        const divDetails = document.getElementById('order-details');
 
-        var api_metrics = [
-            graphite.metric("order-ddos.com.bytes.traffic." + orderUuid + ".m1_rate").alias("Traffic in bytes"),
-            graphite.metric("order-ddos.com.requests.succeeded." + orderUuid + ".m1_rate").alias("Requests succeeded"),
-            graphite.metric("order-ddos.com.requests.failed." + orderUuid + ".m1_rate").alias("Requests failed"),
-            graphite.metric("order-ddos.com.request.time.p99").alias("P99 Request time"),
-        ];
+        const tStart = new Date("2019-03-15T21:41");
+        const tFinish = null;
 
-        d3.select("#example1").call(div => {
-          div.append("div")
-              .attr("class", "axis")
-              .call(context.axis().orient("top"));
-
-          div.selectAll(".horizon0")
-              .data(api_metrics)
-            .enter().append("div")
-              .attr("class", "horizon")
-              .call(context.horizon().height(80));
-
-          div.append("div")
-              .attr("class", "rule")
-              .call(context.rule());
-        });
-
-        // On mousemove, reposition the chart values to match the rule.
-        context.on("focus", function(i) {
-          d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
-        });
+        if(tStart) {
+            drawGraphs(orderUuid, tStart, tFinish || new Date());
+        }
     </script>
 </body>
 </html>
