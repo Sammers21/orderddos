@@ -138,7 +138,6 @@
                     </div>
                 </div>
 
-                {{#if false}}
                 <div class="row px-3 py-2">
                     <div class="col-3 text-muted">
                         2019-02-25 03:11:03
@@ -194,12 +193,10 @@
                         DDoS attack has been completed.
                     </div>
                 </div>
-                {{/if}}
             </div>
         </div>
     </div>
 
-    {{#if false}}
     <style>
         .axis {
           font: 10px sans-serif;
@@ -299,21 +296,23 @@
         };
     </script>
     <script>
+        const orderUuid = ocation.href.split('/').pop();
+
         var context = cubism.context()
-            .serverDelay(0)
-            .clientDelay(0)
-            .step(1e3)
-            .size(960)
+            .serverDelay(1500)
+            .clientDelay(1500)
+            .step(1e4)
+            .size(950)
             // .stop();
 
-        const x = random("NA#0"),
-              y = random("NA#1"),
-              z = random("NA#2"),
-              a = random("EU#0"),
-              b = random("EU#1"),
-              c = random("EU#2"),
-              d = random("EU#3"),
-              u = random("A#0");
+        var graphite = context.graphite("http://104.248.203.116:8080");
+
+        var api_metrics = [
+            graphite.metric("order-ddos.com.bytes.traffic." + orderUuid + ".m1_rate").alias("Traffic in bytes"),
+            graphite.metric("order-ddos.com.requests.succeeded." + orderUuid + ".m1_rate").alias("Requests succeeded"),
+            graphite.metric("order-ddos.com.requests.failed." + orderUuid + ".m1_rate").alias("Requests failed"),
+            graphite.metric("order-ddos.com.request.time.p99").alias("P99 Request time"),
+        ];
 
         d3.select("#example1").call(div => {
           div.append("div")
@@ -321,16 +320,10 @@
               .call(context.axis().orient("top"));
 
           div.selectAll(".horizon0")
-              .data([x.add(y).add(z).add(a).add(b).add(c).add(d).add(u)])
+              .data(api_metrics)
             .enter().append("div")
               .attr("class", "horizon")
-              .call(context.horizon().height(160).title("Total request rate, Rx/s").extent([0, 1600]));
-
-          div.selectAll(".horizon1")
-              .data([x, y, z, a, b, c, d, u])
-            .enter().append("div")
-              .attr("class", "horizon")
-              .call(context.horizon().extent([0, 200]));
+              .call(context.horizon().height(80));
 
           div.append("div")
               .attr("class", "rule")
@@ -342,6 +335,5 @@
           d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
         });
     </script>
-    {{/if}}
 </body>
 </html>
