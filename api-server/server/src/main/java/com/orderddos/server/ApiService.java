@@ -19,7 +19,8 @@ public class ApiService extends AbstractVerticle {
 
     public static final Integer API_SERVICE_VERTICLE_PORT = 4000;
 
-    public static final String START_DDOS = "/start-ddos";
+    public static final String START_DDOS = "/start";
+    public static final String STOP_DDOS = "/stop";
     public static final String DDOS_UUID = "uuid";
     private PgPool pgClient;
     private DigitalOceanClient digitalOceanClient;
@@ -45,34 +46,35 @@ public class ApiService extends AbstractVerticle {
         router.post(START_DDOS).handler(ctx -> {
             MultiMap params = ctx.request().params();
             UUID uuid = UUID.fromString(params.get(DDOS_UUID));
+
+            Future<PgRowSet> selectFuture = Future.future();
             pgClient.preparedQuery(
                     "select uuid , t_submitted , email , target_url , num_nodes_by_region , t_start , duration , status from Orders where uuid =$1",
-                    Tuple.of(uuid), result -> {
-                        if (result.succeeded()) {
-                            PgRowSet rows = result.result();
-                            Row onlyRow = rows.iterator().next();
-                            Order order = new Order(
-                                    onlyRow.getUUID("uuid"),
-                                    onlyRow.getOffsetDateTime("t_submitted"),
-                                    onlyRow.getString("email"),
-                                    onlyRow.getString("target_url"),
-                                    (JsonObject) onlyRow.getJson("num_nodes_by_region").value(),
-                                    onlyRow.getOffsetDateTime("t_start"),
-                                    onlyRow.getInterval("duration"),
-                                    onlyRow.getString("status")
-                            );
-                            new DDoSDeployment(digitalOceanClient, vertx, order).deploy().setHandler(deployed -> {
-                                if (deployed.succeeded()) {
-                                    ctx.response().end("DEPLOYED");
-                                } else {
-                                    ctx.response().end("ERROR" + deployed.cause().getMessage());
-                                }
-                            });
-                        } else {
-                            ctx.response().end(result.cause().toString());
-                            log.error("Error during query occured", result.cause());
-                        }
-                    });
+                    Tuple.of(uuid), selectFuture);
+            selectFuture.compose(rows -> {
+                Row onlyRow = rows.iterator().next();
+                Order order = new Order(
+                        onlyRow.getUUID("uuid"),
+                        onlyRow.getOffsetDateTime("t_submitted"),
+                        onlyRow.getString("email"),
+                        onlyRow.getString("target_url"),
+                        (JsonObject) onlyRow.getJson("num_nodes_by_region").value(),
+                        onlyRow.getOffsetDateTime("t_start"),
+                        onlyRow.getInterval("duration"),
+                        onlyRow.getString("status")
+                );
+                return new DDoSDeployment(digitalOceanClient, vertx, order).deploy();
+            }).compose(deployed -> {
+                Future<PgRowSet> insertTStartFuture = Future.future();
+                pgClient.preparedQuery("UPDATE Orders set t_start = now() where uuid = $1", Tuple.of(uuid), insertTStartFuture);
+                return insertTStartFuture;
+            }).setHandler(deployed -> {
+                if (deployed.succeeded()) {
+                    ctx.response().end("DEPLOYED");
+                } else {
+                    ctx.response().end("ERROR" + deployed.cause().getMessage());
+                }
+            });
         });
         httpServer.requestHandler(router);
         Future<HttpServer> httpServerDeployed = Future.future();
