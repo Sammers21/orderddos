@@ -124,6 +124,7 @@ app.get('/', (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, 'css')));
 app.use(express.static(path.join(__dirname, 'static')));
 
 if (config.hasOwnProperty('ssl')) {
