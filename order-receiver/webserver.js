@@ -122,10 +122,6 @@ app.get('/', (req, res) => {
     res.render("index.html");
 });
 
-app.get('/order', (req, res) => {
-    res.render("create-order.html");
-});
-
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(path.join(__dirname, 'static')));
 
