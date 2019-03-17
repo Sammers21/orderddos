@@ -113,8 +113,8 @@ app.post('/submit-order', (req, res) => {
         }));
     }).catch(err => {
         console.log("Ept:", err);
-        res.status(400).send(`<h2>Че за хуйня?</h2>
-            <p><pre style="color: red;">${JSON.stringify(err, null, 4)}</pre>
+        res.status(400).send(
+            `<p><pre style="color: red;">${JSON.stringify(err, null, 4)}</pre>
             <p><a href="/order">Back to order form</a>`);
     });
 });
@@ -124,7 +124,6 @@ app.get('/', (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, 'dist')));
-app.use(express.static(path.join(__dirname, 'css')));
 app.use(express.static(path.join(__dirname, 'static')));
 
 if (config.hasOwnProperty('ssl')) {
