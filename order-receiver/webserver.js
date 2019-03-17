@@ -129,7 +129,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 if (config.hasOwnProperty('ssl')) {
     const privateKey = fs.readFileSync(config.ssl.privateKey, 'utf8');
     const certificate = fs.readFileSync(config.ssl.cert, 'utf8');
-    const ca = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/chain.pem', 'utf8');
+    const ca = fs.readFileSync(config.ssl.ca, 'utf8');
     const credentials = {
         key: privateKey,
         cert: certificate,
