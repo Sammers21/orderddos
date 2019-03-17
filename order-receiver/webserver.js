@@ -4,6 +4,9 @@ const config = require(process.env.ORDER_DDOS_CFG);
 
 const express = require('express');
 const pgPromise = require('pg-promise')();
+const fs = require("fs");
+const https = require('https');
+const http = require('http');
 
 const app = express();
 const db = pgPromise(config.db);
@@ -26,7 +29,7 @@ app.use(express.json());
 const zeroPad = (x, l) => {
     x = x.toString();
 
-    while(x.length < l) {
+    while (x.length < l) {
         x = '0' + x;
     }
 
@@ -39,13 +42,11 @@ const formatDateTime = dt => {
 };
 
 const formatTimezone = tzOffset => {
-    if(tzOffset < 0) {
+    if (tzOffset < 0) {
         return `UTC+${Math.round(-tzOffset / 60)}`;
-    }
-    else if(tzOffset === 0) {
+    } else if (tzOffset === 0) {
         return "UTC";
-    }
-    else {
+    } else {
         return `UTC-${Math.round(tzOffset / 60)}`;
     }
 }
@@ -57,8 +58,8 @@ app.get('/order/:id', (req, res) => {
     ).then(data => {
         let duration = 0;
 
-        if(data.duration.hours) duration += 60 * data.duration.hours;
-        if(data.duration.minutes) duration += data.duration.minutes;
+        if (data.duration.hours) duration += 60 * data.duration.hours;
+        if (data.duration.minutes) duration += data.duration.minutes;
 
         // TODO: display times, except startTime, in the client's timezone (UTC for no-JS clients)
         res.render("order-details.html", {
@@ -85,7 +86,7 @@ app.get('/order/:id', (req, res) => {
 app.post('/submit-order', (req, res) => {
     // TODO: process urlencoded requests separately for no-JS clients
 
-    const { email, targetUrl, numNa, numEu, numA, duration, startTime } = req.body;
+    const {email, targetUrl, numNa, numEu, numA, duration, startTime} = req.body;
 
     // NOTE: use the default for t_submitted as soon as it's fixed in the schema
     db.one(
@@ -125,4 +126,18 @@ app.get('/', (req, res) => {
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(path.join(__dirname, 'static')));
 
-app.listen(config.web.port, () => console.log(`Listening on port \x1b[1m${config.web.port}\x1b[0m.`))
+if (config.hasOwnProperty('ssl')) {
+    const privateKey = fs.readFileSync(config.ssl.privateKey, 'utf8');
+    const certificate = fs.readFileSync(config.ssl.cert, 'utf8');
+    const ca = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/chain.pem', 'utf8');
+    const credentials = {
+        key: privateKey,
+        cert: certificate,
+        ca: ca
+    };
+    const httpsServer = https.createServer(credentials, app);
+    httpsServer.listen(config.web.port, () => console.log(`Listening on port \x1b[1m${config.web.port}\x1b[0m.`))
+} else {
+    const httpServer = http.createServer(app);
+    httpServer.listen(config.web.port, () => console.log(`Listening on port \x1b[1m${config.web.port}\x1b[0m.`))
+}
