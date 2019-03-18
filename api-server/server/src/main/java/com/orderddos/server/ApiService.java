@@ -24,8 +24,20 @@ public class ApiService extends AbstractVerticle {
     public static final String START_DDOS = "/start";
     public static final String STOP_DDOS = "/stop";
     public static final String DDOS_UUID = "uuid";
+    private final String dbHost;
+    private final String dbDatabase;
+    private final String dbPassword;
+    private final String dbUser;
     private PgPool pgClient;
     private DigitalOceanClient digitalOceanClient;
+
+    public ApiService(JsonObject params) {
+        JsonObject db = params.getJsonObject("db");
+        this.dbHost = db.getString("host");
+        this.dbDatabase = db.getString("database");
+        this.dbUser = db.getString("user");
+        this.dbPassword = db.getString("password");
+    }
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
@@ -37,10 +49,10 @@ public class ApiService extends AbstractVerticle {
         // Pool options
         PgPoolOptions options = new PgPoolOptions()
                 .setPort(5432)
-                .setHost("104.248.203.116")
-                .setDatabase("postgres")
-                .setUser("postgres")
-                .setPassword("GSJ73vFZ3L6cfZFCBzTtp7JZ5vnCsrpxeuj9squgsu53FkV7NacLmqUZ8PDxyVCY")
+                .setHost(dbHost)
+                .setDatabase(dbDatabase)
+                .setUser(dbUser)
+                .setPassword(dbPassword)
                 .setMaxSize(5);
 
         // Create the client pool

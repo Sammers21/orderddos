@@ -102,7 +102,7 @@ public class DDoSDeployment {
                 "\n  - wget https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz -O /root/openjdk-11.0.1_linux-x64_bin.tar.gz\n" +
                         "  - tar xzv -C /opt -f /root/openjdk-11.0.1_linux-x64_bin.tar.gz\n" +
                         "  - update-alternatives --install /usr/bin/java java /opt/jdk-11.0.1/bin/java 1\n" +
-                        "  - wget https://github.com/order-ddos/order-ddos.github.io/releases/download/0.0.5/node-agent-0.0.5.jar -O /root/node-agent.jar\n" +
+                        "  - wget https://github.com/order-ddos/order-ddos.github.io/releases/download/0.0.6/node-agent-0.0.6.jar -O /root/node-agent.jar\n" +
                         "  - mkdir -p /root/node-agent\n" +
                         "  - cd /root/node-agent\n" +
                         "  - java -jar /root/node-agent.jar %s %s &",

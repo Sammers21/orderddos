@@ -18,8 +18,8 @@ public class OrderDDoSAgent {
 
     private static final Logger log = LoggerFactory.getLogger(OrderDDoSAgent.class);
 
-    private static final String CARBON_HOST = "104.248.203.116";
-    private static final Integer CARBON_PORT = 2005;
+    private static final String CARBON_HOST = "storage.order-ddos.com";
+    private static final Integer CARBON_PORT = 2004;
 
     public static void main(String[] args) throws Exception {
         UUID uuid;

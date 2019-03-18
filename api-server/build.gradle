@@ -39,6 +39,6 @@ subprojects {
         options.forkOptions.setMemoryMaximumSize("128m") // Set maximum memory to 4g
     }
 
-    version = '0.0.5'
+    version = '0.0.6'
 }
 

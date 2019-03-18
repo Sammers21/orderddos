@@ -1,6 +1,7 @@
 package com.orderddos.server;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public class DDoSApiService {
     }
 
     public static void main(String[] args) throws URISyntaxException {
-        VERTX.deployVerticle(new ApiService(), event -> {
+        VERTX.deployVerticle(new ApiService(new JsonObject(args[0])), event -> {
             if (event.succeeded()) {
                 log.info("ApiService is on");
             } else {
