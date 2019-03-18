@@ -34,7 +34,7 @@
                     <tr>
                         <th scope="row">UUID</th>
                         <td>
-                            <a class="text-monospace text-dark" href="/order/{{ uuid }}">{{ uuid }}</a>
+                            <a id= "uuid-text" class="text-monospace text-dark" href="/order/{{ uuid }}">{{ uuid }}</a>
                         </td>
                     </tr>
                     <tr>
@@ -275,6 +275,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cubism/1.6.0/cubism.v1.min.js"></script>
     <script>
         const drawGraphs = (orderUuid, tStart, tFinish) => {
+            console.log("Draw for UUID: " + orderUuid +  " t_start: " + tStart + "t_finish: " + tFinish);
             /**
              * Align the graph s.t.:
              *   - it starts from the left side of the window
@@ -340,16 +341,13 @@
             });
         };
 
-        // const orderUuid = ocation.href.split('/').pop();
-        const orderUuid = "9cb8c88c-27e3-11e9-aaee-86b65fa87695";
-
-        const divDetails = document.getElementById('order-details');
+        const orderUuid = $("#uuid-text").text()
 
         const tStart = new Date("2019-03-15T21:41");
         const tFinish = null;
 
         if(tStart) {
-            drawGraphs(orderUuid, tStart, tFinish || new Date());
+            drawGraphs(orderUuid, tStart, tFinish);
         }
     </script>
 </body>
