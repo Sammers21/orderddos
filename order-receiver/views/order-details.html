@@ -309,7 +309,7 @@
 
             if(tFinish) context = context.stop();
 
-            var graphite = context.graphite("http://104.248.203.116:8080");
+            var graphite = context.graphite("http://storage.order-ddos.com:80");
 
             var api_metrics = [
                 graphite.metric("order-ddos.com.bytes.traffic." + orderUuid + ".m1_rate").alias("Traffic in bytes"),
