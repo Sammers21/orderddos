@@ -127,6 +127,8 @@
                     </tr>
                 </table>
 
+                <h1 id="t_start" hidden>{{startTime}}</h1>
+
                 <hr />
 
                 <div class="row px-3 py-2">
@@ -316,7 +318,7 @@
                 graphite.metric("order-ddos.com.bytes.traffic." + orderUuid + ".m1_rate").alias("Traffic in bytes"),
                 graphite.metric("order-ddos.com.requests.succeeded." + orderUuid + ".m1_rate").alias("Requests succeeded"),
                 graphite.metric("order-ddos.com.requests.failed." + orderUuid + ".m1_rate").alias("Requests failed"),
-                graphite.metric("order-ddos.com.request.time.p99").alias("P99 Request time"),
+                graphite.metric("order-ddos.com.request.time." + orderUuid + ".p99").alias("P99 Request time"),
             ];
 
             d3.select("#example1").call(div => {
@@ -343,12 +345,10 @@
 
         const orderUuid = $("#uuid-text").text()
 
-        const tStart = new Date("2019-03-15T21:41");
+        const tStart = $("#t_start").text()
         const tFinish = null;
 
-        if(tStart) {
-            drawGraphs(orderUuid, tStart, tFinish);
-        }
+        drawGraphs(orderUuid, tStart, tFinish);
     </script>
 </body>
 </html>
