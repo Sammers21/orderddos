@@ -4,6 +4,7 @@ import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 import com.orderddos.server.impl.UndeployerImpl;
 import io.reactiverse.pgclient.*;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServer;
@@ -13,6 +14,7 @@ import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ApiService extends AbstractVerticle {
@@ -43,7 +45,6 @@ public class ApiService extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         var httpServer = vertx.createHttpServer();
         this.digitalOceanClient = new DigitalOceanClient(DDoSApiService.OTABEK_API_KEY);
-        UndeployerImpl undeployer = new UndeployerImpl(vertx, digitalOceanClient);
         var router = Router.router(vertx);
 
         // Pool options
@@ -58,6 +59,8 @@ public class ApiService extends AbstractVerticle {
         // Create the client pool
         this.pgClient = PgClient.pool(vertx, options);
 
+        UndeployerImpl undeployer = new UndeployerImpl(vertx, digitalOceanClient, pgClient);
+
         router.route(START_DDOS).handler(ctx -> {
             UUID uuid = ddosAttackUuid(ctx);
 
@@ -65,24 +68,31 @@ public class ApiService extends AbstractVerticle {
             pgClient.preparedQuery(
                     "select uuid , t_submitted , email , target_url , num_nodes_by_region , t_start , duration , status from Orders where uuid =$1",
                     Tuple.of(uuid), selectFuture);
-            selectFuture.compose(rows -> {
-                Row onlyRow = rows.iterator().next();
-                Order order = new Order(
-                        onlyRow.getUUID("uuid"),
-                        onlyRow.getOffsetDateTime("t_submitted"),
-                        onlyRow.getString("email"),
-                        onlyRow.getString("target_url"),
-                        (JsonObject) onlyRow.getJson("num_nodes_by_region").value(),
-                        onlyRow.getOffsetDateTime("t_start"),
-                        onlyRow.getInterval("duration"),
-                        onlyRow.getString("status")
-                );
-                return new DDoSDeployment(digitalOceanClient, vertx, order, undeployer).deploy();
-            }).compose(deployed -> {
-                Future<PgRowSet> insertTStartFuture = Future.future();
-                pgClient.preparedQuery("UPDATE Orders set t_start = now() where uuid = $1", Tuple.of(uuid), insertTStartFuture);
-                return insertTStartFuture;
-            }).setHandler(deployed -> {
+            selectFuture.compose(deployed -> {
+                if (deployed.size() == 1) {
+                    Future<PgRowSet> updateStatus = Future.future();
+                    pgClient.preparedQuery("UPDATE Orders set status = 'ONGOING' where uuid = $1", Tuple.of(uuid), updateStatus);
+                    Future<PgRowSet> insertTStartFuture = Future.future();
+                    pgClient.preparedQuery("UPDATE Orders set t_start = now() where uuid = $1", Tuple.of(uuid), insertTStartFuture);
+                    return CompositeFuture.all(List.of(updateStatus, insertTStartFuture)).compose(some -> Future.succeededFuture(deployed));
+                } else {
+                    return Future.failedFuture(String.format("Order with id %s cant be found in database", uuid));
+                }
+            })
+                    .compose(rows -> {
+                        Row onlyRow = rows.iterator().next();
+                        Order order = new Order(
+                                onlyRow.getUUID("uuid"),
+                                onlyRow.getOffsetDateTime("t_submitted"),
+                                onlyRow.getString("email"),
+                                onlyRow.getString("target_url"),
+                                (JsonObject) onlyRow.getJson("num_nodes_by_region").value(),
+                                onlyRow.getOffsetDateTime("t_start"),
+                                onlyRow.getInterval("duration"),
+                                onlyRow.getString("status")
+                        );
+                        return new DDoSDeployment(digitalOceanClient, vertx, order, undeployer).deploy();
+                    }).setHandler(deployed -> {
                 if (deployed.succeeded()) {
                     ctx.response().end("DEPLOYED");
                 } else {

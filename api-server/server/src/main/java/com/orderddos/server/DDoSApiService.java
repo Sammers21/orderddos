@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 
+import static com.orderddos.server.ApiService.API_SERVICE_VERTICLE_PORT;
+
 public class DDoSApiService {
 
     private static Logger log = LoggerFactory.getLogger(DDoSApiService.class);
@@ -20,9 +22,13 @@ public class DDoSApiService {
     }
 
     public static void main(String[] args) throws URISyntaxException {
-        VERTX.deployVerticle(new ApiService(new JsonObject(args[0])), event -> {
+        String arg = args[0];
+        log.info("Config at: {}", args);
+        String config = VERTX.fileSystem().readFileBlocking(arg).toString();
+        JsonObject configJson = new JsonObject(config);
+        VERTX.deployVerticle(new ApiService(configJson), event -> {
             if (event.succeeded()) {
-                log.info("ApiService is on");
+                log.info("ApiService is on port {}", API_SERVICE_VERTICLE_PORT);
             } else {
                 log.error("Unable to start ApiService verticle");
             }
