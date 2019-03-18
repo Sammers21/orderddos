@@ -1,20 +1,14 @@
-
 import React from "react";
 import ReactDOM from "react-dom";
 
 import PositiveIntegerField from "./components/PositiveIntegerField.jsx";
 import OptDateTimeField from "./components/OptDateTimeField.jsx";
 
-const formatMoneyAmount = x => {
-    let s = x.toFixed(2);
-
-    for(let i = s.length - 6; i > 0; i -= 3) {
-        console.log(i);
-        s = s.slice(0, i) + '\xa0' + s.slice(i);
-    }
-
-    return s;
-};
+// TODO adjust the variable
+// $ 0.01 per GB. Single node bandwidth ~ 1 Gbit/s
+const NODE_COST_PER_SECOND = 0.01 / 8;
+const EFFECTIVENESS_RATIO = 0.75;
+const NODE_COST_PER_MINUTE = NODE_COST_PER_SECOND * 60 * EFFECTIVENESS_RATIO;
 
 class OrderForm extends React.Component {
     constructor(props) {
@@ -26,16 +20,16 @@ class OrderForm extends React.Component {
             numNa: 10,
             numEu: 0,
             numA: 0,
-            duration: 30,
+            duration_hours: 0,
+            duration_minutes: 0,
             startTime: null,
-
             wasSubmitAttempted: false,
             status: 'INITIAL'
         };
     }
 
     resetStatus() {
-        if(this.state.status === 'SUCCESS') {
+        if (this.state.status === 'SUCCESS') {
             this.setState({
                 wasSubmitAttempted: false,
                 status: 'INITIAL'
@@ -44,23 +38,23 @@ class OrderForm extends React.Component {
     }
 
     handleUpdate(key, newValue) {
-        this.setState({ [key]: newValue }, () => this.resetStatus());
+        this.setState({[key]: newValue}, () => this.resetStatus());
     }
 
     handleEmailUpdate(newEmail) {
-        this.setState({ email: newEmail }, () => this.resetStatus());
+        this.setState({email: newEmail}, () => this.resetStatus());
     }
 
     handleTargetUrlUpdate(newTargetUrl) {
-        this.setState({ targetUrl: newTargetUrl }, () => this.resetStatus());
+        this.setState({targetUrl: newTargetUrl}, () => this.resetStatus());
     }
 
     isInputNonzero() {
-        if(this.state.numNa === 0 && this.state.numEu === 0 && this.state.numA === 0) {
+        if (this.state.numNa === 0 && this.state.numEu === 0 && this.state.numA === 0) {
             return false;
         }
 
-        if(this.state.duration === 0) {
+        if (this.state.duration === 0) {
             return false;
         }
 
@@ -76,28 +70,36 @@ class OrderForm extends React.Component {
     }
 
     isValid() {
-        if(!this.isInputNonzero()) {
+        if (!this.isInputNonzero()) {
             return false;
         }
 
-        if(!this.validateEmail()) {
+        if (!this.validateEmail()) {
             return false;
         }
 
-        if(!this.validateTargetUrl()) {
+        if (!this.validateTargetUrl()) {
             return false;
         }
 
         return true;
     }
 
-    handleSubmit(e) {
-        this.setState({ wasSubmitAttempted: true });
+    nodeCount() {
+        return this.state.numEu + this.state.numA + this.state.numNa;
+    }
 
-        if(this.isValid()) {
+    money() {
+        return Math.round(this.nodeCount() * this.durationMinutes() * NODE_COST_PER_MINUTE * 100) / 100
+    }
+
+    handleSubmit(e) {
+        this.setState({wasSubmitAttempted: true});
+
+        if (this.isValid()) {
             console.log(this.state);
 
-            this.setState({ status: 'SENDING' });
+            this.setState({status: 'SENDING'});
 
             fetch("/submit-order", {
                 method: 'POST',
@@ -110,7 +112,8 @@ class OrderForm extends React.Component {
                     numNa: this.state.numNa,
                     numEu: this.state.numEu,
                     numA: this.state.numA,
-                    duration: this.state.duration,
+                    duration_hours: this.state.duration_hours,
+                    duration_minutes: this.state.duration_minutes,
                     startTime: this.state.startTime
                 })
             }).then(response => {
@@ -118,8 +121,8 @@ class OrderForm extends React.Component {
 
                 return response.json();
             }).then(data => {
-                if(data.status === 'OK') {
-                    this.setState({ status: 'SUCCESS' }, () => {
+                if (data.status === 'OK') {
+                    this.setState({status: 'SUCCESS'}, () => {
                         setTimeout(() => {
                             location.href = data.location;
                         }, 500);
@@ -136,59 +139,65 @@ class OrderForm extends React.Component {
         return false;
     }
 
+    durationMinutes() {
+        return this.state.duration_hours * 60 + this.state.duration_minutes;
+    }
+
     render() {
         return <div className="mx-auto" style={{maxWidth: "600px"}}>
-            <p>
-                Evaluate DDoS-vulnerability of your <s>competitors</s> servers.
-            </p>
 
             <div className="card" id="form-order">
                 <form className="card-body" action="/submit-order" method="POST" onSubmit={e => this.handleSubmit(e)}>
-                    <h3 className="text-center mb-4">Order a DDoS attack</h3>
+                    <h3 className="text-center mb-4">DDoS attack order form</h3>
 
                     <div className="form-group">
                         <div className="form-row">
                             <label className="col-2 col-form-label" htmlFor="email">E-mail</label>
                             <div className="col-10">
                                 <div className="input-group">
-                                    <input className={"form-control" + ((this.state.wasSubmitAttempted && !this.validateEmail()) ? " is-invalid" : "")}
-                                           type="text" id="email" name="email"
-                                           autoFocus={true} autoComplete="email"
-                                           placeholder="titantins@gmail.com"
-                                           value={this.state.email}
-                                           onChange={e => this.handleEmailUpdate(e.target.value)} />
+                                    <input
+                                        className={"form-control" + ((this.state.wasSubmitAttempted && !this.validateEmail()) ? " is-invalid" : "")}
+                                        type="text" id="email" name="email"
+                                        autoFocus={false} autoComplete="email"
+                                        placeholder="example@example.net"
+                                        value={this.state.email}
+                                        onChange={e => this.handleEmailUpdate(e.target.value)}/>
                                     <div className="invalid-feedback">
-                                      Please provide an E-mail address.
+                                        Please provide an E-mail address.
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <small className="form-text text-muted">
-                            You'll be personally contacted by Pavel Drankov, our CEO.
+                            You'll be contacted in 3 business days in order to verify the resource ownership.
                         </small>
                     </div>
 
-                    <hr />
+                    <hr/>
 
                     <div className="form-group form-row">
                         <label className="col-2 col-form-label" htmlFor="target_url">URL</label>
                         <div className="col-10">
                             <div className="input-group">
-                                <input className={"form-control" + ((this.state.wasSubmitAttempted && !this.validateTargetUrl()) ? " is-invalid" : "")}
-                                       type="text" id="target_url" name="target_url"
-                                       autoComplete="url"
-                                       placeholder="https://github.com/Sammers21/"
-                                       value={this.state.targetUrl}
-                                       onChange={e => this.handleTargetUrlUpdate(e.target.value)} />
+                                <input
+                                    className={"form-control" + ((this.state.wasSubmitAttempted && !this.validateTargetUrl()) ? " is-invalid" : "")}
+                                    type="text" id="target_url" name="target_url"
+                                    autoComplete="url"
+                                    placeholder="https://exmple.com/"
+                                    value={this.state.targetUrl}
+                                    onChange={e => this.handleTargetUrlUpdate(e.target.value)}/>
                                 <div className="invalid-feedback">
-                                  Please provide a target URL.
+                                    Please provide a target URL.
                                 </div>
                             </div>
                         </div>
+                        <small className="form-text text-muted">
+                            The recourse URL to perform a DDoS attack.
+                        </small>
                     </div>
 
                     <div className="form-group">
-                        <label>Node count</label>
+                        <label>Nodes count per region</label>
                         <div className="row">
                             <div className="col">
                                 <div className="input-group input-group-sm">
@@ -196,7 +205,8 @@ class OrderForm extends React.Component {
                                         <label className="input-group-text" htmlFor="num_nodes_na">North America</label>
                                     </div>
                                     <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_na"
-                                                          value={this.state.numNa} onInput={v => this.handleUpdate('numNa', v)} />
+                                                          value={this.state.numNa}
+                                                          onInput={v => this.handleUpdate('numNa', v)}/>
                                 </div>
                             </div>
                             <div className="col">
@@ -205,7 +215,8 @@ class OrderForm extends React.Component {
                                         <label className="input-group-text" htmlFor="num_nodes_eu">Europe</label>
                                     </div>
                                     <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_eu"
-                                                           value={this.state.numEu} onInput={v => this.handleUpdate('numEu', v)} />
+                                                          value={this.state.numEu}
+                                                          onInput={v => this.handleUpdate('numEu', v)}/>
                                 </div>
                             </div>
                             <div className="col">
@@ -214,80 +225,78 @@ class OrderForm extends React.Component {
                                         <label className="input-group-text" htmlFor="num_nodes_a">Asia</label>
                                     </div>
                                     <PositiveIntegerField className="form-control form-control-sm" name="num_nodes_a"
-                                                          value={this.state.numA} onInput={v => this.handleUpdate('numA', v)} />
+                                                          value={this.state.numA}
+                                                          onInput={v => this.handleUpdate('numA', v)}/>
                                 </div>
                             </div>
                         </div>
+                        <small className="form-text text-muted">
+                            Choose the amount and location of nodes used for the attack.
+                        </small>
+                        <small className="form-text text-muted">
+                            Single node bandwidth ~ 1 Gbit/s.
+                        </small>
                     </div>
 
                     <div className="form-row">
-                        <div className="col form-group">
-                            <label htmlFor="start_time">Start time</label>
-                            <OptDateTimeField name="start_time" onInput={newDate => this.handleUpdate('startTime', newDate)} />
-                        </div>
-
-                        <div className="col form-group">
-                            <label htmlFor="duration">Duration</label>
-                            <div className="input-group">
-                                <PositiveIntegerField className="form-control" name="duration"
-                                                      value={this.state.duration} onInput={v => this.handleUpdate('duration', v)}/>
-                                <div className="input-group-append">
-                                    <label className="input-group-text" htmlFor="duration">minutes</label>
+                        <label>DDoS attack duration</label>
+                        <div className="row">
+                            <div className="col form-group">
+                                <div className="input-group">
+                                    <PositiveIntegerField className="form-control" name="duration"
+                                                          value={this.state.duration_hours}
+                                                          onInput={v => this.handleUpdate('duration_hours', v)}/>
+                                    <div className="input-group-append">
+                                        <label className="input-group-text" htmlFor="duration">hours</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col form-group">
+                                <div className="input-group">
+                                    <PositiveIntegerField className="form-control" name="duration"
+                                                          value={this.state.duration_minutes}
+                                                          onInput={v => this.handleUpdate('duration_minutes', v)}/>
+                                    <div className="input-group-append">
+                                        <label className="input-group-text" htmlFor="duration">minutes</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="form-group form-row">
-                        <label className="col-2 col-form-label" htmlFor="target_url">Subtotal</label>
                         <div className="col-10 col-form-label">
                             {
                                 this.isInputNonzero() ? <>
-                                    <span className="text-muted">
-                                        <strong>{this.props.baseCost}</strong>
-                                        {(this.state.numNa !== 0) && <> +&nbsp;
-                                            <strong>{this.state.numNa}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costNa}</strong>
-                                        </>}
-                                        {(this.state.numEu !== 0) && <> +&nbsp;
-                                            <strong>{this.state.numEu}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costEu}</strong>
-                                        </>}
-                                        {(this.state.numA !== 0) && <> +&nbsp;
-                                            <strong>{this.state.numA}</strong>&thinsp;&times;&thinsp;<strong>{this.state.duration}</strong>&thinsp;&times;&thinsp;<strong>{this.props.costA}</strong>
-                                        </>} =&nbsp;
-                                    </span>
-                                    <strong>{
-                                        formatMoneyAmount(
-                                            this.props.baseCost
-                                                + (this.state.numNa * this.state.duration * this.props.costNa)
-                                                + (this.state.numEu * this.state.duration * this.props.costEu)
-                                                + (this.state.numA * this.state.duration * this.props.costA)
-                                        )
-                                    }</strong>&nbsp;₽
-                                </> : <span className="text-muted">—</span>
+                                    Subtotal: ${this.money()}
+                                </> : <span className="text-muted">Subtotal: 0</span>
                             }
                         </div>
                     </div>
 
-                    <hr />
+                    <hr/>
 
                     <div className="text-center">
-                        <button type="submit" className={"btn btn-lg " + (this.state.status === 'SUCCESS' ? "btn-success" : "btn-primary") + " px-5 text-center"}
+                        <button type="submit"
+                                className={"btn btn-lg " + (this.state.status === 'SUCCESS' ? "btn-success" : "btn-primary") + " px-5 text-center"}
                                 disabled={this.state.status !== 'INITIAL' || !this.isInputNonzero() || (this.state.wasSubmitAttempted && !this.isValid())}>
                             {
                                 this.state.status === 'SENDING' ? (
-                                    <img src="/spinner.svg" style={{'height': '30px'}} />
+                                    <img src="/spinner.svg" style={{'height': '30px'}}/>
                                 ) : this.state.status === 'SUCCESS' ? (
-                                    <img src="/tick.svg" style={{'height': '30px', 'opacity': '0.75'}} />
+                                    <img src="/tick.svg" style={{'height': '30px', 'opacity': '0.75'}}/>
                                 ) : <>Submit</>
                             }
                         </button>
                     </div>
                 </form>
-            </div> {/* .card */}
+            </div>
+            {/* .card */}
         </div>;
     }
 }
 
 window.addEventListener('load', () => {
-    ReactDOM.render(<OrderForm baseCost={50} costNa={0.09} costEu={0.11} costA={0.15}/>, document.getElementById('order-form-container'));
+    ReactDOM.render(<OrderForm baseCost={50} costNa={0.09} costEu={0.11}
+                               costA={0.15}/>, document.getElementById('order-form-container'));
 });

@@ -32,7 +32,14 @@
     }
 
     .section2 {
+        position: relative;
         height: 100vh;
+        background-size: cover;
+    }
+
+    #order-form-container {
+        position: relative;
+        top: 20%;
     }
 
     .main_grid {
@@ -44,7 +51,7 @@
         padding: 2px;
     }
 </style>
-<div class="section1">
+<div class="section1" id ="section1">
     <div class="main_grid mx-auto" style="max-width: 70vh;">
         <div class="row d-flex justify-content-center ">
             <div class="col text-center mb-5 w3-padding-large bg-dark text-white">
@@ -83,127 +90,14 @@
         </div>
         <div class="mx-auto row d-flex justify-content-center">
             <div class="internal_section_1">
-                <a class="btn btn-dark btn-lg active" href="#section2" role="button">Order now</a>
+                <a class="btn btn-dark btn-lg active" href="#order-form-to-fill" role="button">Order now</a>
             </div>
         </div>
     </div>
 </div>
-<div class="section2" id="section2">
-    <div class="mx-auto" style="max-width: 600px;">
-        <div class="card">
-            <form action="/submit-order" class="card-body" method="POST">
-                <h3 class="text-center mb-4">DDoS attack order form</h3>
-
-                <div class="form-group">
-                    <div class="form-row">
-                        <label class="col-2 col-form-label" for="email">E-mail</label>
-                        <div class="col-10">
-                            <input class="form-control" id="email" name="email" placeholder="example@example.net"
-                                   type="text"/>
-                        </div>
-                    </div>
-                    <small class="form-text text-muted">
-                        You'll be contacted in 3 business days in order to verify the resource ownership.
-                    </small>
-                </div>
-
-                <hr/>
-
-                <div class="form-group form-row">
-                    <label class="col-2 col-form-label" for="target_url">URL</label>
-                    <div class="col-10">
-                        <input class="form-control" id="target_url" name="target_url" placeholder="https://exmple.com/"
-                               type="text"/>
-                    </div>
-                    <small class="form-text text-muted">
-                        The recourse URL to perform a DDoS attack.
-                    </small>
-                </div>
-
-                <div class="form-group">
-                    <label>Nodes count per region</label>
-                    <div class="row">
-                        <div class="col">
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <label class="input-group-text" for="num_nodes_na">North America</label>
-                                </div>
-                                <input class="form-control form-control-sm" id="num_nodes_na" name="num_nodes_na"
-                                       placeholder="0" type="text" value="0"/>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <label class="input-group-text" for="num_nodes_eu">Europe</label>
-                                </div>
-                                <input class="form-control form-control-sm" id="num_nodes_eu" name="num_nodes_eu"
-                                       placeholder="0" type="text"/>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <label class="input-group-text" for="num_nodes_a">Asia</label>
-                                </div>
-                                <input class="form-control form-control-sm" id="num_nodes_a" name="num_nodes_a"
-                                       placeholder="0"
-                                       type="text"/>
-                            </div>
-                        </div>
-                    </div>
-                    <small class="form-text text-muted">
-                        Choose the amount and location of nodes used for the attack.
-                    </small>
-                    <small class="form-text text-muted">
-                        Single node bandwidth ~ 1 Gbit/s.
-                    </small>
-                </div>
-
-                <div class="form-row">
-                    <label>DDoS attack duration</label>
-                    <div class="row">
-                        <div class="col form-group">
-                            <div class="input-group">
-                                <input class="form-control" id="duration_hours" name="duration" placeholder="0"
-                                       type="text"
-                                       value="0"/>
-                                <div class="input-group-append">
-                                    <div class="input-group-text">hours</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col form-group">
-                            <div class="input-group">
-                                <input class="form-control" id="duration_minutes" name="duration" placeholder="0"
-                                       type="text" value="0"/>
-                                <div class="input-group-append">
-                                    <div class="input-group-text">minutes</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group form-row">
-                    <label class="col-2 col-form-label" for="target_url">Subtotal:</label>
-                    <div class="col-10 col-form-label">
-                        <div id="resulted_price">0 $</div>
-                    </div>
-                </div>
-
-                <hr/>
-
-                <div class="text-center">
-                    <button class="btn btn-lg btn-primary" type="submit">Submit</button>
-                </div>
-            </form>
-        </div> <!-- .card -->
-    </div>
+<div class="section2" id="order-form-to-fill">
+    <div id="order-form-container"></div>
+    <script src="/js/order.js"></script>
 </div>
-
-<script src="js/index.js"></script>
-<div id="order-form-container"></div>
-<script src="/js/order.js"></script>
 </body>
 </html>

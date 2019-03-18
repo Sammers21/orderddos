@@ -79,14 +79,14 @@ app.get('/order/:id', (req, res) => {
     }).catch(err => {
         res.status(404).send(`<h2>Not found</h2>
             <p><pre style="color: red;">${err}</pre>
-            <p><a href="/order">Back to order form</a>`);
+            <p><a href="/#order-form-to-fill">Back to order form</a>`);
     });
 });
 
 app.post('/submit-order', (req, res) => {
     // TODO: process urlencoded requests separately for no-JS clients
 
-    const {email, targetUrl, numNa, numEu, numA, duration, startTime} = req.body;
+    const {email, targetUrl, numNa, numEu, numA, duration_hours, duration_minutes, startTime} = req.body;
 
     // NOTE: use the default for t_submitted as soon as it's fixed in the schema
     db.one(
@@ -102,7 +102,7 @@ app.post('/submit-order', (req, res) => {
                 as: parseInt(numA)
             }),
             startTime,
-            duration + ' minutes'
+            duration_hours + ' hours ' + duration_minutes + ' minutes'
         ]
     ).then(data => {
         console.log(`New order: \x1b[1m${data.uuid}\x1b[0m`);
@@ -115,7 +115,7 @@ app.post('/submit-order', (req, res) => {
         console.log("Ept:", err);
         res.status(400).send(
             `<p><pre style="color: red;">${JSON.stringify(err, null, 4)}</pre>
-            <p><a href="/order">Back to order form</a>`);
+            <p><a href="/#order-form-to-fill">Back to order form</a>`);
     });
 });
 
