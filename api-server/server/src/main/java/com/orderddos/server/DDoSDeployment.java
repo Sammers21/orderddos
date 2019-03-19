@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.orderddos.docean.DropletRegion.AMS_3;
+import static com.orderddos.docean.DropletRegion.*;
 import static com.orderddos.server.DDoSApiService.SETUP_ENV_SCRIPT;
 
 public class DDoSDeployment {
@@ -36,19 +36,27 @@ public class DDoSDeployment {
     }
 
     public Future<Void> deploy() {
-        Droplet droplets = droplets();
-        Future<Droplets> fd = deployDroplets(droplets);
+        List<Droplet> droplets = droplets();
+        Future<List<Droplets>> fd = deployDroplets(droplets);
         removeDropletsAfter(duration() + DELAY_BEFORE_DEPLOYMENT_MS);
         return fd.mapEmpty();
     }
 
-    private Future<Droplets> deployDroplets(Droplet droplets) {
-        Future<Droplets> fd = Future.future();
+    private Future<List<Droplets>> deployDroplets(List<Droplet> droplets) {
+        Future<List<Droplets>> fd = Future.future();
         vertx.executeBlocking(event -> {
             try {
-                Droplets createdDropltets = digitalOceanClient.createDroplets(droplets);
+                List<Droplets> collect = droplets.stream().map(droplet -> {
+                    try {
+                        return digitalOceanClient.createDroplets(droplet);
+                    } catch (Exception e) {
+                        log.error("Failed to deploy order " + order, e);
+                        event.fail(e);
+                        return null;
+                    }
+                }).collect(Collectors.toList());
                 log.info("Order '{}' is deployed: {}", order.getUuid(), order);
-                event.complete(createdDropltets);
+                event.complete(collect);
             } catch (Exception e) {
                 log.error("Failed to deploy order " + order, e);
                 event.fail(e);
@@ -63,25 +71,34 @@ public class DDoSDeployment {
         });
     }
 
-    private Droplet droplets() {
-        String firstFourLettersOfUUid = order.getUuid().toString().substring(0, 4);
+    private List<Droplet> droplets() {
+
         Integer euDrop = order.getNum_nodes_by_region().getInteger("eu");
+        Integer naDrop = order.getNum_nodes_by_region().getInteger("na");
+        Integer asDrop = order.getNum_nodes_by_region().getInteger("as");
+        final String userData = userData();
+        log.info("User data: {}", userData);
+        return List.of(
+                createDropletsForRegion("eu", AMS_3, euDrop),
+                createDropletsForRegion("na", SFO_2, naDrop),
+                createDropletsForRegion("as", SGP_1, asDrop)
+        );
+    }
 
-        List<String> dropletNames = IntStream.range(0, euDrop)
+    private Droplet createDropletsForRegion(String region, String dcRegion, int size) {
+        String firstFourLettersOfUUid = order.getUuid().toString().substring(0, 4);
+        List<String> dropletNames = IntStream.range(0, size)
                 .boxed()
-                .map(number -> firstFourLettersOfUUid + "-instance-" + number)
+                .map(number -> String.format("%s-instance-%s-%d", firstFourLettersOfUUid, region, number))
                 .collect(Collectors.toList());
-
-        // Create a new droplets
         Droplet droplets = new Droplet();
         droplets.setNames(dropletNames);
         droplets.setSize(DropletSize.S_1_VCPU_1GB);
-        droplets.setRegion(new Region(AMS_3));
+        droplets.setRegion(new Region(dcRegion));
         droplets.setImage(new Image(DropletImage.UBUNTU_18_04_X64));
         droplets.setTags(List.of(order.getUuid().toString()));
         final String userData = userData();
         droplets.setUserData(userData);
-        log.info("User data:\n" + userData);
         List<Key> keys = new ArrayList<>();
         final Key key = new Key();
         key.setFingerprint("36:59:36:cf:aa:7f:0a:1a:e9:8f:18:b9:0b:5b:59:d2");
