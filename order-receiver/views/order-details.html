@@ -119,11 +119,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">Total cost</th>
-                    <!-- <td><strong>120.00</strong> ₽</td> -->
-                    <td>&mdash;</td>
-                </tr>
-                <tr>
                     <th scope="row">Scheduled start time</th>
                     <td>
                         {{#if startTime}}
@@ -274,7 +269,7 @@
 
             if (tFinish) context = context.stop();
 
-            var graphite = context.graphite("http://storage.order-ddos.com:80");
+            var graphite = context.graphite("https://storage.order-ddos.com");
 
             var api_metrics = [
                 graphite.metric("order-ddos.com.bytes.traffic." + orderUuid + ".m1_rate").alias("Traffic in bytes"),
