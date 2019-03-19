@@ -9,220 +9,242 @@
     <link rel="shortcut icon" href="/favicon.png">
 
     <!-- <link rel="stylesheet" href="css/normalize.css"> -->
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cubism/1.6.0/cubism.v1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1 class="text-center mt-4">
-        <a class="text-dark" href="/">Order-ddos.com</a>
-    </h1>
+<h1 class="text-center mt-4">
+    <a class="text-dark" href="/">Order-ddos.com</a>
+</h1>
 
-    <hr />
+<hr/>
 
-    <div class="mx-auto" style="max-width: 1000px;">
-        <div class="card mb-5">
-            <div class="card-header d-flex justify-content-between text-muted">
-                <span>Order details</span>
-                <a href="/#order-form-to-fill"><em>Back to order form</em></a>
-            </div>
+<div class="mx-auto" style="max-width: 1000px;">
+    <div class="card mb-5">
+        <div class="card-header d-flex justify-content-between text-muted">
+            <span>Order details</span>
+            <a href="/#order-form-to-fill"><em>Back to order form</em></a>
+        </div>
 
-            <div class="card-body">
-                <table class="table table-striped">
-                    <tr>
-                        <th scope="row">UUID</th>
-                        <td>
-                            <a id= "uuid-text" class="text-monospace text-dark" href="/order/{{ uuid }}">{{ uuid }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Status</th>
-                        <td>
-                            {{#ifEq status 'NEW'}}
-                                <span class="badge badge-secondary">Unconfirmed</span>
-                            {{/ifEq}}
-                            {{#ifEq status 'SCHEDULED'}}
-                                <span class="badge badge-primary">Scheduled</span>
-                            {{/ifEq}}
-                            {{#ifEq status 'REJECTED'}}
-                                <span class="badge badge-danger">Rejected</span>
-                            {{/ifEq}}
-                            {{#ifEq status 'ONGOING'}}
-                                <span class="badge badge-success">Executing</span>
-                            {{/ifEq}}
-                            {{#ifEq status 'DONE'}}
-                                <span class="badge badge-light">Completed</span>
-                            {{/ifEq}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">E-mail</th>
-                        <td>
-                            <a class="text-dark" href="maito:{{ email }}">{{ email }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Target URL</th>
-                        <td>
-                            <div style="overflow: scroll;">
-                                <div style="overflow: visible; width: 1px;">
+        <div class="card-body">
+            <table class="table table-striped">
+                <tr>
+                    <th scope="row">UUID</th>
+                    <td>
+                        <a id="uuid-text" class="text-monospace text-dark" href="/order/{{ uuid }}">{{ uuid }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Status</th>
+                    <td>
+                        {{#ifEq status 'NEW'}}
+                        <span class="badge badge-secondary">Unconfirmed</span>
+                        {{/ifEq}}
+                        {{#ifEq status 'SCHEDULED'}}
+                        <span class="badge badge-primary">Scheduled</span>
+                        {{/ifEq}}
+                        {{#ifEq status 'REJECTED'}}
+                        <span class="badge badge-danger">Rejected</span>
+                        {{/ifEq}}
+                        {{#ifEq status 'ONGOING'}}
+                        <span class="badge badge-success">Executing</span>
+                        {{/ifEq}}
+                        {{#ifEq status 'DONE'}}
+                        <span class="badge badge-light">Completed</span>
+                        {{/ifEq}}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">E-mail</th>
+                    <td>
+                        <a class="text-dark" href="maito:{{ email }}">{{ email }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Target URL</th>
+                    <td>
+                        <div style="overflow: scroll;">
+                            <div style="overflow: visible; width: 1px;">
                                     <span class="text-monospace text-muted" style="white-space: nowrap;">
                                         {{ targetUrl }}
                                     </span>
-                                </div>
                             </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Received</th>
-                        <td>{{ submissionTime }} <em>({{ submissionTz }})</em></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Node counts</th>
-                        <td>
-                            <table class="table table-sm table-borderless m-0 w-auto">
-                                <tr class="table-light">
-                                    <td class="py-0"><em>North America</em></td>
-                                    <td class="py-0">
-                                        <span class="badge {{#if numNa}}badge-primary{{else}}badge-muted{{/if}}">{{ numNa }}</span>
-                                    </td>
-                                </tr>
-                                <tr class="table-light">
-                                    <td class="py-0"><em>Europe</em></td>
-                                    <td class="py-0">
-                                        <span class="badge {{#if numEu}}badge-primary{{else}}badge-muted{{/if}}">{{ numEu }}</span>
-                                    </td>
-                                </tr>
-                                <tr class="table-light">
-                                    <td class="py-0"><em>Asia</em></td>
-                                    <td class="py-0">
-                                        <span class="badge {{#if numA}}badge-primary{{else}}badge-muted{{/if}}">{{ numA }}</span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Duration</th>
-                        <td>
-                            <strong class="badge badge-dark" style="font-size: 1em;">{{ duration }}</strong> minutes
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Total cost</th>
-                        <!-- <td><strong>120.00</strong> ₽</td> -->
-                        <td>&mdash;</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Scheduled start time</th>
-                        <td>
-                            {{#if startTime}}
-                                {{ startTime }} <em>({{ startTz }})</em>
-                            {{else}}
-                                <em>right away</em>
-                            {{/if}}
-                        </td>
-                    </tr>
-                </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Received</th>
+                    <td>{{ submissionTime }} <em>({{ submissionTz }})</em></td>
+                </tr>
+                <tr>
+                    <th scope="row">Node counts</th>
+                    <td>
+                        <table class="table table-sm table-borderless m-0 w-auto">
+                            <tr class="table-light">
+                                <td class="py-0"><em>North America</em></td>
+                                <td class="py-0">
+                                    <span class="badge {{#if numNa}}badge-primary{{else}}badge-muted{{/if}}">{{ numNa }}</span>
+                                </td>
+                            </tr>
+                            <tr class="table-light">
+                                <td class="py-0"><em>Europe</em></td>
+                                <td class="py-0">
+                                    <span class="badge {{#if numEu}}badge-primary{{else}}badge-muted{{/if}}">{{ numEu }}</span>
+                                </td>
+                            </tr>
+                            <tr class="table-light">
+                                <td class="py-0"><em>Asia</em></td>
+                                <td class="py-0">
+                                    <span class="badge {{#if numA}}badge-primary{{else}}badge-muted{{/if}}">{{ numA }}</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Duration</th>
+                    <td>
+                        <strong class="badge badge-dark" style="font-size: 1em;">{{ duration }}</strong> minutes
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Total cost</th>
+                    <!-- <td><strong>120.00</strong> ₽</td> -->
+                    <td>&mdash;</td>
+                </tr>
+                <tr>
+                    <th scope="row">Scheduled start time</th>
+                    <td>
+                        {{#if startTime}}
+                        {{ startTime }} <em>({{ startTz }})</em>
+                        {{else}}
+                        <em>right away</em>
+                        {{/if}}
+                    </td>
+                </tr>
+            </table>
 
-                <h1 id="t_start" hidden>{{startTime}}</h1>
+            <h1 id="t_start" hidden>{{startTime}}</h1>
+            <h1 id="duration" hidden>{{ duration }}</h1>
 
-                <hr />
+            <hr/>
 
-                <div class="row px-3 py-2">
-                    <div class="col-3 text-muted">
-                        {{ submissionTime }}
-                    </div>
-                    <div class="col-9">
-                        Order received.
-                    </div>
+            <div class="row px-3 py-2">
+                <div class="col-3 text-muted">
+                    {{ submissionTime }}
                 </div>
+                <div class="col-9">
+                    Order received.
+                </div>
+            </div>
 
-                <div id="example1"></div>
+            <div id="example1"></div>
         </div>
     </div>
 
     <style>
         .axis {
-          font: 10px sans-serif;
+            font: 10px sans-serif;
         }
 
         .axis text {
-          -webkit-transition: fill-opacity 250ms linear;
+            -webkit-transition: fill-opacity 250ms linear;
         }
 
         .axis path {
-          display: none;
+            display: none;
         }
 
         .axis line {
-          stroke: #000;
-          shape-rendering: crispEdges;
+            stroke: #000;
+            shape-rendering: crispEdges;
         }
 
         .horizon {
-          border-bottom: solid 1px #000;
-          overflow: hidden;
-          position: relative;
+            border-bottom: solid 1px #000;
+            overflow: hidden;
+            position: relative;
         }
 
         .horizon {
-          border-top: solid 1px #000;
-          border-bottom: solid 1px #000;
+            border-top: solid 1px #000;
+            border-bottom: solid 1px #000;
         }
 
         .horizon + .horizon {
-          border-top: none;
+            border-top: none;
         }
 
         .horizon canvas {
-          display: block;
+            display: block;
         }
 
         .horizon .title,
         .horizon .value {
-          bottom: 0;
-          line-height: 30px;
-          margin: 0 6px;
-          position: absolute;
-          text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-          white-space: nowrap;
+            bottom: 0;
+            line-height: 30px;
+            margin: 0 6px;
+            position: absolute;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+            white-space: nowrap;
         }
 
         .horizon .title {
-          left: 0;
-          color: white;
-          text-shadow: 1px 1px 2px black;
+            left: 0;
+            color: white;
+            text-shadow: 1px 1px 2px black;
         }
 
         .horizon .value {
-          right: 0;
-          top: 0;
+            right: 0;
+            top: 0;
 
-          padding-right: .25rem;
+            padding-right: .25rem;
         }
 
         .line {
-          background: #000;
-          opacity: .2;
-          z-index: 2;
+            background: #000;
+            opacity: .2;
+            z-index: 2;
 
-          /* Below is a helpless hack to align rule with the mouse pointer in presence of paddings */
-          transform: translateX(1.25rem);
+            /* Below is a helpless hack to align rule with the mouse pointer in presence of paddings */
+            transform: translateX(1.25rem);
         }
 
-        #example1 { min-height: 155px; }
-        #example2a { min-height: 153px; }
-        #example2b { min-height: 255px; }
+        #example1 {
+            min-height: 155px;
+        }
+
+        #example2a {
+            min-height: 153px;
+        }
+
+        #example2b {
+            min-height: 255px;
+        }
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cubism/1.6.0/cubism.v1.min.js"></script>
     <script>
         const drawGraphs = (orderUuid, tStart, tFinish) => {
-            console.log("Draw for UUID: " + orderUuid +  " t_start: " + tStart + "t_finish: " + tFinish);
+            let step = 10000;
+            let size = 950;
+
+            console.log("Draw for UUID: " + orderUuid);
+            console.log("t_start: " + tStart);
+
+            console.log("t_finish: " + tFinish);
+
             /**
              * Align the graph s.t.:
              *   - it starts from the left side of the window
@@ -233,19 +255,15 @@
             const tEnd = tFinish || new Date();
 
             const nTotalMillis = tEnd - tStart;
-
-            let step = 10000;
-
-            while(nTotalMillis / step > 950) {
+            while (nTotalMillis / step > size) {
                 step += 10000;
             }
 
-            const tPlotLeeway = Math.max(0, tStart - (tEnd - step * 950));
+            const tPlotLeeway = Math.max(0, tStart - (tEnd - step * size));
 
-            console.log(tStart - tEnd + step * 950);
+            console.log(tStart - tEnd + step * size);
 
             const delay = new Date() - tEnd + tPlotLeeway;
-            // const delay = tPlotLeeway;
 
             console.log(delay);
 
@@ -253,9 +271,9 @@
                 .serverDelay(-delay)
                 .clientDelay(0)
                 .step(step)
-                .size(10000);
+                .size(size);
 
-            if(tFinish) context = context.stop();
+            if (tFinish) context = context.stop();
 
             var graphite = context.graphite("http://storage.order-ddos.com:80");
 
@@ -267,33 +285,43 @@
             ];
 
             d3.select("#example1").call(div => {
-              div.append("div")
-                  .attr("class", "axis")
-                  .call(context.axis().orient("top"));
+                div.append("div")
+                    .attr("class", "axis")
+                    .call(context.axis().orient("top"));
 
-              div.selectAll(".horizon0")
-                  .data(api_metrics)
-                .enter().append("div")
-                  .attr("class", "horizon")
-                  .call(context.horizon().height(80));
+                div.selectAll(".horizon0")
+                    .data(api_metrics)
+                    .enter().append("div")
+                    .attr("class", "horizon")
+                    .call(context.horizon().height(80));
 
-              div.append("div")
-                  .attr("class", "rule")
-                  .call(context.rule());
+                div.append("div")
+                    .attr("class", "rule")
+                    .call(context.rule());
             });
 
             // On mousemove, reposition the chart values to match the rule.
-            context.on("focus", function(i) {
-              d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
+            context.on("focus", function (i) {
+                d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
             });
         };
 
-        const orderUuid = $("#uuid-text").text()
+        const tStart = $("#t_start").text();
 
-        const tStart = $("#t_start").text()
-        const tFinish = null;
-
-        drawGraphs(orderUuid, tStart, tFinish);
+        if (tStart) {
+            let now = new Date();
+            let startDate = new Date(tStart);
+            const orderUuid = $("#uuid-text").text();
+            const duration = parseInt($("#duration").text());
+            const durationMs = duration * 1000;
+            const confirmedEnd = new Date(now + durationMs);
+            if (confirmedEnd > now) {
+                drawGraphs(orderUuid, startDate, now);
+            } else {
+                drawGraphs(orderUuid, startDate, confirmedEnd);
+            }
+        }
     </script>
+</div>
 </body>
 </html>
