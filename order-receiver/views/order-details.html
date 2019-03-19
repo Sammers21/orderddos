@@ -242,7 +242,6 @@
 
             console.log("Draw for UUID: " + orderUuid);
             console.log("t_start: " + tStart);
-
             console.log("t_finish: " + tFinish);
 
             /**
@@ -293,7 +292,7 @@
                     .data(api_metrics)
                     .enter().append("div")
                     .attr("class", "horizon")
-                    .call(context.horizon().height(80));
+                    .call(context.horizon().height(120));
 
                 div.append("div")
                     .attr("class", "rule")
