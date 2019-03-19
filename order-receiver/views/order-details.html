@@ -300,11 +300,12 @@
             });
         };
 
-        const tStart = $("#t_start").text();
+        var tStart = $("#t_start").text();
 
         if (tStart) {
-            let now = new Date();
+            var tStart = tStart + " UTC";
             let startDate = new Date(tStart);
+            let now = new Date();
             const orderUuid = $("#uuid-text").text();
             const duration = parseInt($("#duration").text());
             const durationMs = duration * 1000;
