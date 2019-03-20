@@ -43,6 +43,7 @@
                     <th scope="row">UUID</th>
                     <td>
                         <a id="uuid-text" class="text-monospace text-dark" href="/order/{{ uuid }}">{{ uuid }}</a>
+                        <a class="badge badge-danger" id="btn-cancel" href="/cancel/{{ uuid }}">Cancel DDoS attach</a>
                     </td>
                 </tr>
                 <tr>
@@ -231,6 +232,17 @@
     </style>
 
     <script>
+        $("#btn-cancel").click(function (e) {
+            fetch(e.target.href).then(response => response.json()).then(data => {
+                console.log(data);
+                if (data.status == 'OK') {
+                    e.target.classList.remove('badge-danger');
+                    e.target.classList.add('badge-secondary');
+                    e.target.innerHTML = "Cancellation request sent";
+                }
+            })
+        });
+
         const drawGraphs = (orderUuid, tStart, tFinish) => {
             let step = 10000;
             let size = 950;
