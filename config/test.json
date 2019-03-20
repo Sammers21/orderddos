@@ -3,10 +3,14 @@
    "port": 8088
  },
  "email": {
- 	"user": "orderddosattack@gmail.com",
- 	"pass": "isgulkov_delay_pochty",
- 	"senderAddress": "Order DDoS <orderddosattack@gmail.com>",
- 	"recipientAddress": "drankov-hui@isgulkov.ru"
+    "user": "orderddosattack@gmail.com",
+    "pass": "isgulkov_delay_pochty",
+    "senderAddress": "Order DDoS <orderddosattack@gmail.com>",
+    "recipientAddress": "drankov-hui@isgulkov.ru"
+ },
+ "api": {
+    "host": "google.com",
+    "port": 80
  },
  "db": {
    "host": "localhost",

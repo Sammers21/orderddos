@@ -94,10 +94,12 @@ app.get('/order/:id', (req, res) => {
 app.get('/cancel/:id', (req, res) => {
     console.log("Cancellation request", req.params.id);
 
+    const apiConfig = config.api;
+
     http.request({
-      host: 'google.com',
-      path: '/' + req.params.id,
-      port: '80',
+      host: apiConfig.host,
+      port: apiConfig.port,
+      path: "/stop?uuid=" + req.params.id,
       method: 'POST'
     }, response => {
         response.on('data', hz => {
