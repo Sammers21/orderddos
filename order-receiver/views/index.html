@@ -1,69 +1,103 @@
 <!doctype html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Drankow & sons™</title>
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="shortcut icon" href="/favicon.png">
-
-	<!-- <link rel="stylesheet" href="css/normalize.css"> -->
-
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-
-	<style>
-		body {
-			background-image: url(/server-room-light-4032.jpg);
-			background-size: 100%;
-		}
-	</style>
+    <meta charset="utf-8">
+    <title>Order DDoS attack</title>
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="favicon.png" rel="icon" type="image/png"/>
+    <script crossorigin="anonymous"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script crossorigin="anonymous"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-	<div class="text-center mb-5" style="margin-top: 140px;">
-		<h1>Drankow & sons™</h1>
+<style>
+    .section1 {
+        position: relative;
+        height: 100vh;
+        background-image: url("server-room-light-4032.jpg");
+        background-size: cover;
+    }
 
-		Cloud DDoS solutions
-	</div>
+    .section2 {
+        position: relative;
+        height: 100vh;
+        background-size: cover;
+    }
 
-	<div class="d-flex flex-row justify-content-center">
-		<!-- <div class="p-4">
-			<a class="d-inline-block p-2" href="#">Log in</a>
-		</div>
-		<div class="p-4">
-			<a class="d-inline-block p-2" href="#">Sign up</a>
-		</div> -->
-		<div class="p-4">
-			<a class="d-inline-block p-2" href="/order">Submit an order</a>
-		</div>
-	</div>
+    #order-form-container {
+        position: relative;
+        top: 20%;
+    }
 
-	<div class="mx-auto" style="max-width: 750px;">
-		<div class="row mb-2">
-			<div class="col-6 p-3">
-				<h5>Simple and straightforward</h5>
-				There's no need to know anything about DDoS to start using our service. We know we ourselves don't! That's why only HTTP is supported, and in a very simplistic mode. That makes our order UI extremely easy to use, though. <a href="/order">Give it a try!</a>
-			</div>
-			<div class="col-6 p-3">
-				<h5>Flexible pricing</h5>
-				You only pay a fixed cost per node per minute. Before you ask how much is one node, ask yourself something else: do you care? If not, look no further — you and our service are made for each other!
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-6 p-3">
-				<h5>Absolutely legal</h5>
-				Or is it? Well, there haven't been any repercussions yet, so it must be! It's not like we have a lawyer or anything. Lawyers are for those who don't know how to not get caught. Use Tor through VPN, make sure all yout credit cards are stolen, and it'll probably be fine.
-			</div>
-			<div class="col-6 p-3">
-				<h5>Extremely scalable</h5>
-				Your DDoS was fine, but still fell short of achieving your goals? Good news: we can ramp up the amount of traffic as long as you have the money for it! And also as long as our cloud hosting provider has the patience to put up with us, heh.
-			</div>
-		</div>
-	</div>
-
-	<!-- <script src="js/index.js"></script> -->
+    .main_grid {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 10vh;
+        padding: 2px;
+    }
+</style>
+<div class="section1" id ="section1">
+    <div class="main_grid mx-auto" style="max-width: 70vh;">
+        <div class="row d-flex justify-content-center ">
+            <div class="col text-center mb-5 w3-padding-large bg-dark text-white">
+                <h1>DDoS attacks at any scale</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col p-3 bg-dark text-white">
+                <h5>Simple and straightforward</h5>
+                There's no need to know anything about DDoS to start using our service.
+                That makes our order UI extremely easy to use. <a href="/order">Give it a try!</a>
+            </div>
+            <div class="col-1 p-3"></div>
+            <div class="col p-3 bg-dark text-white">
+                <h5>Flexible pricing</h5>
+                You only pay a fixed cost per node per minute.
+            </div>
+        </div>
+        <div class="row" style="height: 3vh">
+            <div class="col"></div>
+        </div>
+        <div class="row">
+            <div class="col p-3 bg-dark text-white">
+                <h5>Graphics</h5>
+                You will be given a set of graphics with real-time metrics, to observe your site behaviour
+                under DDoS attack load.
+            </div>
+            <div class="col-1 p-3"></div>
+            <div class="col p-12 bg-dark text-white">
+                <h5>Extremely scalable</h5>
+                Ability to scale amount of nodes up to tens of thousands
+            </div>
+        </div>
+        <div class="row" style="height: 3vh">
+            <div class="col"></div>
+        </div>
+        <div class="mx-auto row d-flex justify-content-center">
+            <div class="internal_section_1">
+                <a class="btn btn-dark btn-lg active" href="#order-form-to-fill" role="button">Order now</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="section2" id="order-form-to-fill">
+    <div id="order-form-container"></div>
+    <script src="/js/order.js"></script>
+</div>
 </body>
 </html>

@@ -2,10 +2,10 @@ plugins {
     id 'application'
 }
 
-version = '0.0.2'
-mainClassName = 'com.orderddos.agent.OrderDDoSVirus'
+mainClassName = 'com.orderddos.agent.OrderDDoSAgent'
 
 dependencies {
+    compile project(":network-loader")
     compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: '4.0.0'
     compile group: 'io.dropwizard.metrics', name: 'metrics-graphite', version: '4.0.0'
 }

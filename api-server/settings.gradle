@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'api-server'
-include 'server', 'node-agent'
+include 'server', 'node-agent', 'network-loader' , 'loader-cli'

@@ -11,11 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.orderddos.docean.DropletRegion.AMS_3;
+import static com.orderddos.docean.DropletRegion.*;
 import static com.orderddos.server.DDoSApiService.SETUP_ENV_SCRIPT;
 
 public class DDoSDeployment {
@@ -25,45 +24,39 @@ public class DDoSDeployment {
     private final DigitalOceanClient digitalOceanClient;
     private final Vertx vertx;
     private final Order order;
+    private final Undeployer undeployer;
 
     private static final Integer DELAY_BEFORE_DEPLOYMENT_MS = (60 * 2 + 30) * 1000;
 
-    public DDoSDeployment(DigitalOceanClient digitalOceanClient, Vertx vertx, Order order) {
+    public DDoSDeployment(DigitalOceanClient digitalOceanClient, Vertx vertx, Order order, Undeployer undeployer) {
         this.digitalOceanClient = digitalOceanClient;
         this.vertx = vertx;
         this.order = order;
+        this.undeployer = undeployer;
     }
 
     public Future<Void> deploy() {
-        Droplet droplets = droplets();
-        Future<Droplets> fd = deployDroplets(droplets);
+        List<Droplet> droplets = droplets();
+        Future<List<Droplets>> fd = deployDroplets(droplets);
         removeDropletsAfter(duration() + DELAY_BEFORE_DEPLOYMENT_MS);
-        deployViralNetworkAfter(DELAY_BEFORE_DEPLOYMENT_MS);
         return fd.mapEmpty();
     }
 
-    private void deployViralNetworkAfter(Integer delayBeforeDeploymentMs) {
-        vertx.setTimer(delayBeforeDeploymentMs, event -> {
-            try {
-                final Droplets availableDropletsByTagName = digitalOceanClient.getAvailableDropletsByTagName(order.getUuid().toString(), 1, 100_000);
-                final Set<String> droplestIps = availableDropletsByTagName.getDroplets()
-                        .stream()
-                        .map(droplet -> droplet.getNetworks().getVersion4Networks().get(0).getIpAddress())
-                        .collect(Collectors.toSet());
-
-            } catch (Exception e) {
-                log.error("Unable to get info about droplets: ", e);
-            }
-        });
-    }
-
-    private Future<Droplets> deployDroplets(Droplet droplets) {
-        Future<Droplets> fd = Future.future();
+    private Future<List<Droplets>> deployDroplets(List<Droplet> droplets) {
+        Future<List<Droplets>> fd = Future.future();
         vertx.executeBlocking(event -> {
             try {
-                Droplets createdDropltets = digitalOceanClient.createDroplets(droplets);
-                log.info("Order is deployed: " + order);
-                event.complete(createdDropltets);
+                List<Droplets> collect = droplets.stream().map(droplet -> {
+                    try {
+                        return digitalOceanClient.createDroplets(droplet);
+                    } catch (Exception e) {
+                        log.error("Failed to deploy order " + order, e);
+                        event.fail(e);
+                        return null;
+                    }
+                }).collect(Collectors.toList());
+                log.info("Order '{}' is deployed: {}", order.getUuid(), order);
+                event.complete(collect);
             } catch (Exception e) {
                 log.error("Failed to deploy order " + order, e);
                 event.fail(e);
@@ -74,39 +67,38 @@ public class DDoSDeployment {
 
     private void removeDropletsAfter(int duration) {
         vertx.setTimer(duration, timeToUndeploy -> {
-            Future<Delete> delete = Future.future();
-            vertx.executeBlocking(event -> {
-                try {
-                    final Delete removeDroplets = digitalOceanClient.deleteDropletByTagName(order.getUuid().toString());
-                    log.info(String.format("Droplets  with tag '%s' has been removed", order.getUuid().toString()));
-                    event.complete(removeDroplets);
-                } catch (Exception e) {
-                    log.error("Failed to delete" + order, e);
-                    event.fail(e);
-                }
-            }, delete);
+            undeployer.undeployAttackWithUUID(order.getUuid());
         });
     }
 
-    private Droplet droplets() {
-        String firstFourLettersOfUUid = order.getUuid().toString().substring(0, 4);
+    private List<Droplet> droplets() {
+
         Integer euDrop = order.getNum_nodes_by_region().getInteger("eu");
+        Integer naDrop = order.getNum_nodes_by_region().getInteger("na");
+        Integer asDrop = order.getNum_nodes_by_region().getInteger("as");
+        final String userData = userData();
+        log.info("User data: {}", userData);
+        return List.of(
+                createDropletsForRegion("eu", AMS_3, euDrop),
+                createDropletsForRegion("na", SFO_2, naDrop),
+                createDropletsForRegion("as", SGP_1, asDrop)
+        );
+    }
 
-        List<String> dropletNames = IntStream.range(0, euDrop)
+    private Droplet createDropletsForRegion(String region, String dcRegion, int size) {
+        String firstFourLettersOfUUid = order.getUuid().toString().substring(0, 4);
+        List<String> dropletNames = IntStream.range(0, size)
                 .boxed()
-                .map(number -> firstFourLettersOfUUid + "-instance-" + number)
+                .map(number -> String.format("%s-instance-%s-%d", firstFourLettersOfUUid, region, number))
                 .collect(Collectors.toList());
-
-        // Create a new droplets
         Droplet droplets = new Droplet();
         droplets.setNames(dropletNames);
         droplets.setSize(DropletSize.S_1_VCPU_1GB);
-        droplets.setRegion(new Region(AMS_3));
+        droplets.setRegion(new Region(dcRegion));
         droplets.setImage(new Image(DropletImage.UBUNTU_18_04_X64));
         droplets.setTags(List.of(order.getUuid().toString()));
         final String userData = userData();
         droplets.setUserData(userData);
-        log.info("User data:\n" + userData);
         List<Key> keys = new ArrayList<>();
         final Key key = new Key();
         key.setFingerprint("36:59:36:cf:aa:7f:0a:1a:e9:8f:18:b9:0b:5b:59:d2");
@@ -127,7 +119,7 @@ public class DDoSDeployment {
                 "\n  - wget https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz -O /root/openjdk-11.0.1_linux-x64_bin.tar.gz\n" +
                         "  - tar xzv -C /opt -f /root/openjdk-11.0.1_linux-x64_bin.tar.gz\n" +
                         "  - update-alternatives --install /usr/bin/java java /opt/jdk-11.0.1/bin/java 1\n" +
-                        "  - wget https://github.com/order-ddos/order-ddos.github.io/releases/download/0.0.2/node-agent-0.0.2.jar -O /root/node-agent.jar\n" +
+                        "  - wget https://github.com/order-ddos/order-ddos.github.io/releases/download/0.0.7/node-agent-0.0.7.jar -O /root/node-agent.jar\n" +
                         "  - mkdir -p /root/node-agent\n" +
                         "  - cd /root/node-agent\n" +
                         "  - java -jar /root/node-agent.jar %s %s &",
