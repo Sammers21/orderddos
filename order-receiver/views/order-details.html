@@ -31,7 +31,7 @@
 <hr/>
 
 <div class="mx-auto" style="max-width: 1000px;">
-    <div class="card mb-5">
+    <div class="card mb-5" id="order-details" {{#if startTime}} data-t-start="{{startTime}}" {{/if}}>
         <div class="card-header d-flex justify-content-between text-muted">
             <span>Order details</span>
             <a href="/#order-form-to-fill"><em>Back to order form</em></a>
@@ -316,6 +316,21 @@
                 drawGraphs(orderUuid, startDate, confirmedEnd);
             }
         }
+
+        document.getElementById('btn-cancel').addEventListener('click', e => {
+            e.preventDefault();
+
+            fetch(e.target.href).then(response => response.json()).then(data => {
+                console.log(data);
+
+                if(data.status == 'OK') {
+                    e.target.classList.remove('badge-danger');
+                    e.target.classList.add('badge-secondary');
+
+                    e.target.innerHTML = "Cancellation request sent";
+                }
+            })
+        })
     </script>
 </div>
 </body>

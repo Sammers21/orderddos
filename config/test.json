@@ -1,12 +1,12 @@
 {
  "web": {
-   "port": 80
+   "port": 8088
  },
  "email": {
     "user": "orderddosattack@gmail.com",
     "pass": "isgulkov_delay_pochty",
     "senderAddress": "Order DDoS <orderddosattack@gmail.com>",
-    "recipientAddress": "drankov@ebich.com"
+    "recipientAddress": "drankov-hui@isgulkov.ru"
  },
  "api": {
     "host": "google.com",
@@ -14,8 +14,9 @@
  },
  "db": {
    "host": "localhost",
-   "database": "postgres",
-   "user": "postgres",
-   "password": "GSJ73vFZ3L6cfZFCBzTtp7JZ5vnCsrpxeuj9squgsu53FkV7NacLmqUZ8PDxyVCY"
+   "port": 5432,
+   "database": "dddos",
+   "user": "",
+   "password": ""
  }
 }
