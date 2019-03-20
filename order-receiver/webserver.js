@@ -2,6 +2,8 @@ const path = require('path');
 
 const config = require(process.env.ORDER_DDOS_CFG);
 
+const http = require('http');
+
 const express = require('express');
 const pgPromise = require('pg-promise')();
 
@@ -80,6 +82,24 @@ app.get('/order/:id', (req, res) => {
             <p><pre style="color: red;">${err}</pre>
             <p><a href="/order">Back to order form</a>`);
     });
+});
+
+app.get('/cancel/:id', (req, res) => {
+    console.log("Cancellation request", req.params.id);
+
+    http.request({
+      host: 'google.com',
+      path: '/' + req.params.id,
+      port: '80',
+      method: 'POST'
+    }, response => {
+        response.on('data', hz => {
+            console.log("Cancellation response for", req.params.id);
+            console.log(data);
+        });
+    });
+
+    res.send(JSON.stringify({ status: 'OK' }));
 });
 
 app.post('/submit-order', (req, res) => {

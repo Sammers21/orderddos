@@ -23,7 +23,7 @@
     <hr />
 
     <div class="mx-auto" style="max-width: 1000px;">
-        <div class="card mb-5">
+        <div class="card mb-5" id="order-details" {{#if startTime}} data-t-start="{{startTime}}" {{/if}}>
             <div class="card-header d-flex justify-content-between text-muted">
                 <span>Order details</span>
                 <a href="/order"><em>Back to order form</em></a>
@@ -170,7 +170,7 @@
                         2019-02-25 03:11:03
                     </div>
                     <div class="col-9">
-                        DDoS attack has been started.
+                        DDoS attack has been started. <a class="badge badge-danger" id="btn-cancel" href="/cancel/{{ uuid }}">Cancel</a>
                     </div>
                 </div>
 
@@ -351,6 +351,21 @@
         if(tStart) {
             drawGraphs(orderUuid, tStart, tFinish || new Date());
         }
+
+        document.getElementById('btn-cancel').addEventListener('click', e => {
+            e.preventDefault();
+
+            fetch(e.target.href).then(response => response.json()).then(data => {
+                console.log(data);
+
+                if(data.status == 'OK') {
+                    e.target.classList.remove('badge-danger');
+                    e.target.classList.add('badge-secondary');
+
+                    e.target.innerHTML = "Cancellation request sent";
+                }
+            })
+        })
     </script>
 </body>
 </html>
