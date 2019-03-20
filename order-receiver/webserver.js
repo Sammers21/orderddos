@@ -83,6 +83,24 @@ app.get('/order/:id', (req, res) => {
     });
 });
 
+app.get('/cancel/:id', (req, res) => {
+    console.log("Cancellation request", req.params.id);
+
+    http.request({
+      host: 'google.com',
+      path: '/' + req.params.id,
+      port: '80',
+      method: 'POST'
+    }, response => {
+        response.on('data', hz => {
+            console.log("Cancellation response for", req.params.id);
+            console.log(data);
+        });
+    });
+
+    res.send(JSON.stringify({ status: 'OK' }));
+});
+
 app.post('/submit-order', (req, res) => {
     // TODO: process urlencoded requests separately for no-JS clients
 

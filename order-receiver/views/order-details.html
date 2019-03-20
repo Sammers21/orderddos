@@ -140,7 +140,7 @@
                     {{ submissionTime }}
                 </div>
                 <div class="col-9">
-                    Order received.
+                    Order received. <a class="badge badge-danger" id="btn-cancel" href="/cancel/{{ uuid }}">Cancel</a>
                 </div>
             </div>
 
@@ -316,6 +316,21 @@
                 drawGraphs(orderUuid, startDate, confirmedEnd);
             }
         }
+
+        document.getElementById('btn-cancel').addEventListener('click', e => {
+            e.preventDefault();
+
+            fetch(e.target.href).then(response => response.json()).then(data => {
+                console.log(data);
+
+                if(data.status == 'OK') {
+                    e.target.classList.remove('badge-danger');
+                    e.target.classList.add('badge-secondary');
+
+                    e.target.innerHTML = "Cancellation request sent";
+                }
+            })
+        })
     </script>
 </div>
 </body>
