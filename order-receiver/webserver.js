@@ -3,6 +3,15 @@ const path = require('path');
 const config = require(process.env.ORDER_DDOS_CFG);
 
 const http = require('http');
+const nodemailer = require('nodemailer');
+
+const gmailTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: config.email.user,
+        pass: config.email.pass
+    }
+});
 
 const express = require('express');
 const pgPromise = require('pg-promise')();
@@ -125,6 +134,23 @@ app.post('/submit-order', (req, res) => {
         ]
     ).then(data => {
         console.log(`New order: \x1b[1m${data.uuid}\x1b[0m`);
+
+        const emailConfig = config.email;
+
+        gmailTransport.sendMail({
+            from: emailConfig.senderAddress,
+            to: emailConfig.recipientAddress,
+            subject: "New DDoS attack order",
+            html: `
+                <h2>A new DDoS attack order has been received</h2>
+
+                <p>Click <a href="https://order-ddos.com/order/${data.uuid}">here</a> for details.</p>
+            `
+        }, (err, info) => {
+            console.log(err, info);
+        });
+
+        console.log(`Sending notification to \x1b[1m${emailConfig.recipientAddress}\x1b[0m...`)
 
         res.status(201).send(JSON.stringify({
             status: 'OK',
