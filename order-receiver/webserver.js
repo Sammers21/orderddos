@@ -2,6 +2,7 @@ const path = require('path');
 
 const config = require(process.env.ORDER_DDOS_CFG);
 
+const nodemailer = require('nodemailer');
 const express = require('express');
 const pgPromise = require('pg-promise')();
 const fs = require("fs");
@@ -12,6 +13,14 @@ const app = express();
 const db = pgPromise(config.db);
 
 var exphbs = require('express-handlebars');
+
+const gmailTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: config.email.user,
+        pass: config.email.pass
+    }
+});
 
 const hbsInstance = exphbs.create({
     helpers: {
@@ -83,6 +92,24 @@ app.get('/order/:id', (req, res) => {
     });
 });
 
+app.get('/cancel/:id', (req, res) => {
+    console.log("Cancellation request", req.params.id);
+
+    const apiConfig = config.api;
+    let pathToRequst = "/stop?uuid=" + req.params.id;
+    http.request({
+        host: apiConfig.host,
+        port: apiConfig.port,
+        path: pathToRequst,
+        method: 'GET'
+    }, response => {
+        console.log("Cancel response arrived " + response.statusCode, req.params.id);
+        response.on('data', r => {
+            res.redirect('/order/' + req.params.id);
+        });
+    });
+});
+
 app.post('/submit-order', (req, res) => {
     // TODO: process urlencoded requests separately for no-JS clients
 
@@ -106,6 +133,23 @@ app.post('/submit-order', (req, res) => {
         ]
     ).then(data => {
         console.log(`New order: \x1b[1m${data.uuid}\x1b[0m`);
+
+        const emailConfig = config.email;
+
+        gmailTransport.sendMail({
+            from: emailConfig.senderAddress,
+            to: email,
+            subject: "New DDoS attack order",
+            html: `
+                <h2>A new DDoS attack order has been received</h2>
+
+                <p>Click <a href="https://order-ddos.com/order/${data.uuid}">here</a> for details.</p>
+            `
+        }, (err, info) => {
+            console.log(err, info);
+        });
+
+        console.log(`Sending notification to \x1b[1m${email}\x1b[0m...`)
 
         res.status(201).send(JSON.stringify({
             status: 'OK',
